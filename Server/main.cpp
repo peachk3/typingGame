@@ -7,6 +7,7 @@
 #include <thread>
 #include <codecvt>
 #include <chrono>
+using namespace std;
 using namespace sf;
 
 int main() {
@@ -16,15 +17,105 @@ int main() {
     // window창 3.0 버전
     sf::RenderWindow window(sf::VideoMode(sf::Vector2u(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)), L"게임 메인 화면");
     sf::Font font;
-    
+   
     NetworkManager client;
     GameManager game;
+    
+    Texture /*profileTexture,*/ typingButtonTexture, matchButtonTexture, korButtonTexture;
 
     // 폰트 로드 실패일시 종속성 확인해보기
     if (!font.openFromFile("D2Coding.ttf")) {
         std::cerr << "폰트 로드 실패!" << std::endl;
         return -1;
     }
+
+    // 이미지 로드
+    if (!typingButtonTexture.loadFromFile("./assets/image/button.png")) {
+        cerr << "Typing 버튼 이미지 로드 실패!" << endl;
+        return -1;
+    }
+    if (!matchButtonTexture.loadFromFile("./assets/image/button.png")) {
+        cerr << "Match 버튼 이미지 로드 실패!" << endl;
+        return -1;
+    }
+    if (!korButtonTexture.loadFromFile("./assets/image/button.png")) {
+        cerr << "koreng 버튼 이미지 로드 실패!" << endl;
+        return -1;
+    }
+    //if (!profileTexture.loadFromFile("./assets/profile/profile.png")) {
+    //    cerr << "프로필 이미지 로드 실패!" << endl;
+    //    return -1;
+    //}
+
+    //// 프로필 Sprite
+    //Sprite profileSprite(profileTexture);
+    //profileSprite.setTexture(profileTexture);
+    //profileSprite.setPosition(Vector2f(20.f, 20.f));  // 화면 왼쪽 상단에 위치
+
+    //// 프로필 Text 설정 (왼쪽 상단)
+    //Text profileText(font, "My Profile");
+    //profileText.setPosition(Vector2f(100.f, 20.f));  // 이미지 오른쪽에 텍스트 배치
+    //profileText.setCharacterSize(30);
+    //profileText.setFillColor(Color::Black);
+
+
+    // 한글 Sprite 설정
+    Sprite korengButtonSprite(typingButtonTexture);
+    Vector2u textureSize = typingButtonTexture.getSize();
+    float scaleX = 50.f / textureSize.x;  // 가로 크기를 100px로 조정
+    float scaleY = 50.f / textureSize.y;   // 세로 크기를 50px로 조정
+    korengButtonSprite.setScale(Vector2(scaleX, scaleY));
+    korengButtonSprite.setTexture(typingButtonTexture);
+    korengButtonSprite.setPosition(Vector2f(320.f, 190.f));
+
+
+    // 한글 Text 설정
+    Text korengButtonText(font, L"한글 타자 연습");
+    korengButtonText.setPosition(Vector2f(400.f, 200.f));  // 이미지 오른쪽에 텍스트 배치
+    korengButtonText.setCharacterSize(30);
+    korengButtonText.setFillColor(Color::Black);
+
+    // 영문 Sprite 설정
+    Sprite typingButtonSprite(typingButtonTexture);
+    //Vector2u textureSize = typingButtonTexture.getSize();
+    //float scaleX = 100.f / textureSize.x;  // 가로 크기를 100px로 조정
+    //float scaleY = 50.f / textureSize.y;   // 세로 크기를 50px로 조정
+    typingButtonSprite.setScale(Vector2(scaleX, scaleY));
+    //typingButtonSprite.setScale(Vector2f(0.5f, 0.5f));
+    typingButtonSprite.setTexture(typingButtonTexture);
+    typingButtonSprite.setPosition(Vector2f(320.f, 290.f)); // x,y
+
+     
+    // 영문 Text 설정
+    Text typingButtonText(font, L"영문 타자 연습");
+    typingButtonText.setPosition(Vector2f(400.f, 300.f));  // 이미지 오른쪽에 텍스트 배치
+    typingButtonText.setCharacterSize(30);
+    typingButtonText.setFillColor(Color::Black);
+
+    // 코딩 대결 Sprite 설정
+    Sprite matchButtonSprite(typingButtonTexture);
+    //Vector2u textureSize = typingButtonTexture.getSize();
+    //float scaleX = 100.f / textureSize.x;  // 가로 크기를 100px로 조정
+    //float scaleY = 50.f / textureSize.y;   // 세로 크기를 50px로 조정
+    matchButtonSprite.setScale(Vector2(scaleX, scaleY));
+    //matchButtonSprite.setScale(Vector2f(0.5f, 0.5f));
+    matchButtonSprite.setTexture(typingButtonTexture);
+    matchButtonSprite.setPosition(Vector2f(320.f, 390.f));
+
+
+
+    // 코딩 대결 Text 설정
+    Text matchButtonText(font, L"코딩 대결");
+    matchButtonText.setPosition(Vector2f(400.f, 400.f));  // 이미지 오른쪽에 텍스트 배치
+    matchButtonText.setCharacterSize(30);
+    matchButtonText.setFillColor(Color::Black);
+
+
+    // 스프라이트 설정
+    typingButtonSprite.setTexture(typingButtonTexture);
+    matchButtonSprite.setTexture(matchButtonTexture);
+    korengButtonSprite.setTexture(korButtonTexture);
+    //profileSprite.setTexture(profileTexture);
 
     Text buttonText(font, L"게임 시작", 40);
     buttonText.setPosition(Vector2f(300.f, 250.f));
@@ -44,7 +135,8 @@ int main() {
             // 마우스 클릭 시 버튼 클릭 확인
             if (const auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>()) {
                 Vector2i mousePos = Mouse::getPosition(window);
-                if (button.getGlobalBounds().contains(Vector2f(mousePos.x, mousePos.y))) {
+                if (matchButtonSprite.getGlobalBounds().contains(Vector2f(mousePos.x, mousePos.y))) {
+                    cout << "1:1 Match Button Clicked!" << endl;
 
                     if (!client.connectToServer()) {
                         return -1;
@@ -76,8 +168,15 @@ int main() {
 
         // 화면 그리기
         window.clear(Color::White);
-        window.draw(button);
-        window.draw(buttonText);
+        //window.draw(profileText);    // 왼쪽 상단에 profileText 그리기
+        window.draw(typingButtonSprite);  // Typing 버튼 이미지 그리기
+        window.draw(typingButtonText);  // Typing Text 이미지 그리기
+        window.draw(matchButtonSprite);  // 1:1 Match 버튼 이미지 그리기
+        window.draw(matchButtonText);  // match Text 그리기
+        window.draw(korengButtonSprite);  // 한영 버튼 이미지 그리기
+        window.draw(korengButtonText);  // 한영 Text 이미지 그리기
+        //window.draw(button);
+        //window.draw(buttonText);
         window.display();
     }
     return 0;
