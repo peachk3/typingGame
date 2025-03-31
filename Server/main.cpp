@@ -20,7 +20,6 @@ int main() {
     NetworkManager client;
     GameManager game;
 
-
     // 폰트 로드 실패일시 종속성 확인해보기
     if (!font.openFromFile("D2Coding.ttf")) {
         std::cerr << "폰트 로드 실패!" << std::endl;
@@ -64,6 +63,7 @@ int main() {
                         isMatching = true;
                         loadingThread.join();
                         std::cout << "매치 완료되었슴!!" << std::endl;
+                        game.showLoadingScreen(window, font, isMatching);  // 매칭 이후 카운트다운 실행
                         //if (game.showCountdown(window, font)) {
                         std::cout << "게임 시작!!" << std::endl;
                         game.runGame(window, font);
@@ -80,23 +80,5 @@ int main() {
         window.draw(buttonText);
         window.display();
     }
-
-    /*if (!client.connectToServer()) {
-        return -1;
-    }
-    else {
-        game.showLoadingScreen(window, font);
-        std::cout << "로딩창 띄우기!!" << std::endl;
-
-    }
-    
-    if (client.waitForMatch(window, font)) {
-        std::cout << "매치 완료되었슴!!" << std::endl;
-        if (game.showCountdown(window, font)) {
-            std::cout << "게임 시작!!" << std::endl;
-            game.runGame(window, font);
-        }
-    }*/
- 
     return 0;
 }
