@@ -29,3 +29,5 @@ vcpkg install SFML:x64-windows     ## SFML 설치
     - 새 솔루션 폴더 생성 : cli -> 새 프로젝트 생성(위치 확인) : Client -> 소스파일 : [cli_main.cpp](./Client/cli%20-%20main.cpp), [NetworkManager.cpp](./Client/NetworkManager.cpp)
     - 새 솔루션 폴더 생성 : ser -> 새 프로젝트 생성(위치 확인) : Server -> 소스파일 : [server_main.cpp](./Server/server%20-%20main.cpp), [ServerManager.cpp](./Server/ServerManager.cpp)
 
+## 4일차
+- MainDisplay 소스코드 : [MainDisplayV04.cpp](./MainDisplayV04.cpp) 
