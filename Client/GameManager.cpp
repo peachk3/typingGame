@@ -103,20 +103,23 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
     Time elapsedTime;
 
     //bool isMatching = false;  // 매칭 상태 추적
-    int countdown = 5;  // 카운트다운 시작
+    int countdown = 3;  // 카운트다운 시작
     bool countdownStarted = false;
     bool gameStartDisplayed = false;
+
 
     // 서버에서 받은 카운트다운 시작 시각 (서버 시간)
     // 이 값은 서버와 연결된 네트워크 코드에서 설정해야 함
     Time serverStartTime;
     bool serverTimeReceived = false;
+    bool gameStarted = false;
 
     while (gameWindow.isOpen()) {
         // 이벤트 처리 (SFML 3.0.0 방식)
         std::optional<Event> event;
         while (const std::optional event = gameWindow.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
+                std::cout << "gameWindow.close()" << std::endl;
                 gameWindow.close();
                 return;
             }
@@ -127,11 +130,13 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
         if (isMatching && !serverTimeReceived) {
             // 서버로부터 카운트다운 시작 시간 수신 (예시)
             // serverStartTime = 서버에서 받은 시간
+            cout << "카운트다운 시작!" << endl;
             serverTimeReceived = true;
             countdownClock.restart(); // 서버 시간을 받은 시점부터 로컬 시계 시작
         }
         // 매칭이 된 경우 카운트다운 처리
         if (isMatching && serverTimeReceived) {
+            //cout << "isMatching: " << isMatching << "serverTimeReceived:" << serverTimeReceived << endl;
             gameWindow.clear(Color::White);
             gameWindow.draw(matchingText);
 
@@ -140,32 +145,40 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
 
             // 카운트다운 값 계산 (서버 시간 기준)
             int currentCountdown = countdown - static_cast<int>(elapsedCountdownTime);
-
-            if (currentCountdown <= 0) {
+            //std::cout << "currentCountdown: " << currentCountdown << std::endl;
+            if (currentCountdown <= 0 && !gameStarted) {
                 // 카운트다운 종료, 게임 시작
                 countdownText.setString("Start Game!");
                 countdownText.setPosition(Vector2f(GWINDOW_WIDTH / 2 - 135, GWINDOW_HEIGHT / 2 - 50));
                 countdown = 0;  // 카운트다운 시작
-
+                gameWindow.draw(countdownText);
                 //gameWindow.draw(countdownText);
                 //gameWindow.display();
                 std::cout << "잠시후 게임 시작!!" << std::endl;
-
+                gameStarted = true;  // 게임 시작 플래그 설정
+                isMatching = 0;  // 매칭 상태 변경 (중복 실행 방지)
                 // 잠시 대기 후 게임 시작
                 std::this_thread::sleep_for(std::chrono::seconds(1));
+                gameWindow.close();
                 return;
             }
             else {
                 // 카운트다운 표시
-                countdownText.setString(to_string(currentCountdown));
-                gameWindow.draw(countdownText);
+                if (gameStarted != true) {
+                    countdownText.setString(to_string(currentCountdown));
+                    gameWindow.draw(countdownText);
+                }
+                else {
+                    gameWindow.close();
+                    return;
+                }
             }
 
             gameWindow.display();
         }
-           
+
         // 매칭 실패했을 경우
-        else {
+        else if (gameStarted != true) {
             // deltaTime을 계산하여 회전 속도 적용
             Time deltaTime = clock.restart();  // 이전 프레임에서 경과한 시간
             elapsedTime += deltaTime;  // 전체 경과 시간 누적
@@ -195,24 +208,51 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
 }
 
 void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
-    //if (!font.openFromFile("D2Coding.tff")) { // 한글 지원 폰트 사용
-    //    std::cout << "폰트 로드 실패!" << std::endl;
-    //    return;
-    //}
+    std::cout << "게임 시작창 이동 완료!!" << std::endl;
 
-    //// 서버 연결
-    //if (socket.connect("127.0.0.1", 53000) == sf::Socket::Done) {
-    //    std::cout << "서버에 연결됨!\n";
-    //}
-    //std::thread(&GameManager::receiveUpdates, this).detach();
+    Texture ladderImg;
 
-    sf::Text gameText(font, L"게임 시작~~~~~~!", 60);
+    // 이미지 로드
+    if (!ladderImg.loadFromFile("./assets/image/ladder3.png")) {
+        cerr << "Typing 버튼 이미지 로드 실패!" << endl;
+        //return;
+    }
 
-    gameText.setFillColor(sf::Color::Red);
-    gameText.setPosition(sf::Vector2f(500.f, 300.f));
+    sf::Sprite sprite(ladderImg);
 
-    window.clear();
+    // 사다리 1 이미지 설정
+    Sprite ladderImgSpriteLeft(ladderImg);
+    //Vector2u ladderImgSize = ladderImg.getSize();
+    //// 원하는 크기로 조정 (예: 200x200)
+    //float scaleX = 30.f / ladderImgSize.x;
+    //float scaleY = 50.f / ladderImgSize.y;
+    ladderImgSpriteLeft.setTexture(ladderImg);
+    ladderImgSpriteLeft.setPosition(Vector2f(100.f, 150.f));     // 왼쪽
+    //ladderImgSpriteLeft.setPosition(Vec)
+
+    // 사다리 2 이미지 설정
+    Sprite ladderImgSpriteRight(ladderImg);
+    //Vector2u ladderImgSize = ladderImg.getSize();
+    //// 원하는 크기로 조정 (예: 200x200)
+    //float scaleX = 30.f / ladderImgSize.x;
+    //float scaleY = 50.f / ladderImgSize.y;
+    ladderImgSpriteRight.setTexture(ladderImg);
+    ladderImgSpriteRight.setPosition(Vector2f(1080.f, 150.f));     // 오른쪽
+
+
+    //sf::FloatRect bounds = ladderImgSprite.getLocalBounds();
+
+    //sprite.setScale(scaleX, scaleY);
+
+    sf::Text gameText(font, L"게임 시작~~!", 60);
+
+    gameText.setFillColor(Color::Red);
+    gameText.setPosition(Vector2f(480.f, 50.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
+
+    window.clear(Color::White);
     window.draw(gameText);
+    window.draw(ladderImgSpriteLeft);       // 왼쪽
+    window.draw(ladderImgSpriteRight);      // 오른쪽
     window.display();
 
     while (window.isOpen()) {

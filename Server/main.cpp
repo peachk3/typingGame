@@ -62,7 +62,7 @@ int main() {
     // 한글 Sprite 설정
     Sprite korengButtonSprite(typingButtonTexture);
     Vector2u textureSize = typingButtonTexture.getSize();
-    float scaleX = 50.f / textureSize.x;  // 가로 크기를 100px로 조정
+    float scaleX = 50.f / textureSize.x;  // 가로 크기를 50px로 조정
     float scaleY = 50.f / textureSize.y;   // 세로 크기를 50px로 조정
     korengButtonSprite.setScale(Vector2(scaleX, scaleY));
     korengButtonSprite.setTexture(typingButtonTexture);
@@ -121,9 +121,10 @@ int main() {
     buttonText.setPosition(Vector2f(300.f, 250.f));
     buttonText.setFillColor(Color::White);
 
-    RectangleShape button(Vector2f(200, 80));
-    button.setPosition(Vector2f(300.f, 250.f));
-    button.setFillColor(Color::Blue);
+    // 본래 파란색 버튼
+    //RectangleShape button(Vector2f(200, 80));
+    //button.setPosition(Vector2f(300.f, 250.f));
+    //button.setFillColor(Color::Blue);
 
     while (window.isOpen()) {
         // 새로운 방식의 이벤트 처리
@@ -147,20 +148,20 @@ int main() {
                     std::thread loadingThread([&]() {
                         game.showLoadingScreen(window, font, isMatching);
                         std::cout << "로딩창 띄우기!!" << std::endl;
-
                     });
-
 
                     if (client.waitForMatch(window, font)) {
                         isMatching = true;
-                        loadingThread.join();
+                        if (loadingThread.joinable()) loadingThread.join();
+                        //loadingThread.join();
                         std::cout << "매치 완료되었슴!!" << std::endl;
-                        game.showLoadingScreen(window, font, isMatching);  // 매칭 이후 카운트다운 실행
+                        //game.showLoadingScreen(window, font, isMatching);  // 매칭 이후 카운트다운 실행
                         //if (game.showCountdown(window, font)) {
                         std::cout << "게임 시작!!" << std::endl;
                         game.runGame(window, font);
                         //}
                     }
+
 
                 }
             }

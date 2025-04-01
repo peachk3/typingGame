@@ -12,6 +12,7 @@ class GameManager {
 private:
 	sf::TcpSocket socket;
 	std::mutex mtx;
+	sf::RenderWindow window;
 
 	int myID = -1;
 	int myProgress = 0;
@@ -27,7 +28,6 @@ public:
 	void showCountdown(sf::RenderWindow& window, sf::Font& font);
 	//bool showCountdown(sf::RenderWindow& window, sf::Font& font);
 	void runGame(sf::RenderWindow& window, sf::Font& font);
-	void receiveUpdates();
 	void waitForGameStart(sf::TcpSocket& socket, sf::RenderWindow& window, sf::Font& font);
 
 };

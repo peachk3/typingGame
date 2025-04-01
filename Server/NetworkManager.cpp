@@ -8,7 +8,12 @@
 #include <thread>
 
 NetworkManager::NetworkManager() {
+    std::cout << "NetworkManager 생성!" << std::endl;
     // 생성자에서 필요한 초기화 수행 가능
+}
+// 소멸자
+NetworkManager::~NetworkManager() {
+    std::cout << "NetworkManager 소멸!" << std::endl;
 }
 
 bool NetworkManager::connectToServer() {
@@ -44,8 +49,8 @@ bool NetworkManager::waitForMatch(sf::RenderWindow& window, sf::Font& font) {
             std::string message = buffer;
             std::cout << "서버 메시지: " << buffer << std::endl;  // 서버 메시지 출력
             // 두 클라이언트에게 같은 카운트다운 시간 전송
-            player1.send(&countdownStartTime, sizeof(countdownStartTime));
-            player2.send(&countdownStartTime, sizeof(countdownStartTime));
+            //player1.send(&countdownStartTime, sizeof(countdownStartTime));
+            //player2.send(&countdownStartTime, sizeof(countdownStartTime));
 
             if (std::string(buffer) == "매칭 완료! 게임 시작!") {
                 std::cout << "게임이 곧 시작됩니다!" << std::endl;

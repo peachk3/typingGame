@@ -16,6 +16,7 @@ private:
 
 public:
     NetworkManager(); // 생성자
+    ~NetworkManager();  // 소멸자 추가
     bool connectToServer(); // 서버 연결 함수
     bool waitForMatch(sf::RenderWindow& window, sf::Font& font);    // 1:1 매칭 대기 함수
 };
