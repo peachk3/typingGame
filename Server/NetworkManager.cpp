@@ -18,7 +18,7 @@ NetworkManager::~NetworkManager() {
 
 bool NetworkManager::connectToServer() {
     // 서버에 연결 시도 (IP: 포트: 53000) // 210,119,12,60
-    sf::IpAddress serverIP = {210,119,12,60};
+    sf::IpAddress serverIP = {210,119,12,65};
     //sf::IpAddress serverIP = sf::/Localhost
     //if (socket.connect({ 210,119,12,69 }, 53000) == sf::Socket::Status::Done) {
 

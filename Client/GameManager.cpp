@@ -119,8 +119,18 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
         std::optional<Event> event;
         while (const std::optional event = gameWindow.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
-                std::cout << "gameWindow.close()" << std::endl;
+                //std::cout << "게임 로딩창 닫힘 - 서버 연결 종료" << std::endl;
+
+                //// 서버에 연결 종료 메시지 전송
+                //Packet disconnectPacket;
+                //disconnectPacket << "DISCONNECT";
+                //socket.send(disconnectPacket);
+
+                //// 소켓 닫기
+                //socket.disconnect();
+
                 gameWindow.close();
+        
                 return;
             }
         }
@@ -210,15 +220,67 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
 void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
     std::cout << "게임 시작창 이동 완료!!" << std::endl;
 
-    Texture ladderImg;
+    Texture ladderImg, boardImg, player1_Img, player2_Img;
+    Sprite boardImgSprite(boardImg), sprite(ladderImg);
 
     // 이미지 로드
+    if (!boardImg.loadFromFile("./assets/image/board.png")) {
+        cerr << "Typing 버튼 이미지 로드 실패!" << endl;
+        //return;
+    }
     if (!ladderImg.loadFromFile("./assets/image/ladder3.png")) {
         cerr << "Typing 버튼 이미지 로드 실패!" << endl;
         //return;
     }
+    
+    // 플레이어 이미지 로드
+    Texture player1Texture, player2Texture;
+    if (!player1Texture.loadFromFile("player1_1.png") || !player1Texture.loadFromFile("player1_2.png")) {
+        cout << "플레이어 이미지 로드 실패!" << endl;
+        //return -1;
+    }
+    if (!player2Texture.loadFromFile("player2_1.png") || !player2Texture.loadFromFile("player2_2.png")) {
+        cout << "플레이어 이미지 로드 실패!" << endl;
+        //return -1;
+    }
 
-    sf::Sprite sprite(ladderImg);
+    /*Sprite player1Sprite(player1Texture);
+    Sprite player2Sprite(player2Texture);*/
+
+    // 초기 위치 설정
+    /*player1Sprite.setPosition(Vector2f(50.f, 50.f));
+    player2Sprite.setPosition(Vector2f(50.f, 150.f));*/
+    // 플레이어1 애니메이션 스프라이트 로드
+    std::vector<Texture> player1Textures(3);
+    player1Textures[0].loadFromFile("player1_1.png");
+    player1Textures[1].loadFromFile("player1_2.png");
+   // player1Textures[2].loadFromFile("player1_3.png");
+    Sprite player1Sprite(player1Textures[0]);
+    player1Sprite.setPosition(Vector2f(20.f, 10.f));
+    int player1Frame = 0;
+
+    // 플레이어2 애니메이션 스프라이트 로드
+    std::vector<Texture> player2Textures(3);
+    player2Textures[0].loadFromFile("player1_1.png");
+    player2Textures[1].loadFromFile("player1_2.png");
+    //player2Textures[2].loadFromFile("player1_3.png");
+    Sprite player2Sprite(player2Textures[0]);
+    player2Sprite.setPosition(Vector2f(20.f, 60.f));
+    int player2Frame = 0;
+
+
+    Text inputText(font, "", 24);
+    inputText.setFont(font);
+    inputText.setCharacterSize(30);
+    inputText.setFillColor(Color::White);
+    inputText.setPosition(Vector2f(300.f, 200.f));
+
+    wstring userInput;
+    float moveDistance = 20.f; // 한 문장 입력 시 이동 거리
+
+    boardImgSprite.setTexture(boardImg);
+    boardImgSprite.setPosition(Vector2f(0.f, 0.f));
+ 
 
     // 사다리 1 이미지 설정
     Sprite ladderImgSpriteLeft(ladderImg);
@@ -244,13 +306,15 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
 
     //sprite.setScale(scaleX, scaleY);
 
-    sf::Text gameText(font, L"게임 시작~~!", 60);
-
-    gameText.setFillColor(Color::Red);
-    gameText.setPosition(Vector2f(480.f, 50.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
+    //sf::Text gameText(font, L"게임 시작~~!", 60);
+    //gameText.setFillColor(Color::Blue);
+    //gameText.setPosition(Vector2f(480.f, 50.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
 
     window.clear(Color::White);
-    window.draw(gameText);
+    //window.draw(gameText);                // 게임시작 
+    window.draw(player1Sprite);             // player1
+    window.draw(player2Sprite);             // player2
+    window.draw(boardImgSprite);            // 배경이미지
     window.draw(ladderImgSpriteLeft);       // 왼쪽
     window.draw(ladderImgSpriteRight);      // 오른쪽
     window.display();
@@ -271,9 +335,25 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
                 break;
 
             }
-        }
-        if (isWindowClosed) {
-            break;  // 창이 닫히면 반복문을 종료하여 게임을 진행
+            if (event->is<Event::KeyPressed>()) {
+                if (Keyboard::isKeyPressed(Keyboard::Key::Enter)) {
+                    // 문장 입력 완료 시 애니메이션 실행
+                    for (int i = 0; i < 2; i++) {
+                        player1Sprite.setTexture(player1Textures[i]);
+                        player1Sprite.move(Vector2f(10.f, 0.f));  // 오른쪽으로 이동
+                        window.clear(Color::White);
+                        window.draw(player1Sprite);
+                        window.draw(player2Sprite);
+                        window.draw(inputText);
+                        window.display();
+                        sf::sleep(sf::milliseconds(100));  // 애니메이션 속도 조절
+                    }
+                    userInput.clear();
+                }
+            }
+            if (isWindowClosed) {
+                break;  // 창이 닫히면 반복문을 종료하여 게임을 진행
+            }
         }
     }
 }

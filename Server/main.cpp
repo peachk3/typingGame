@@ -21,7 +21,8 @@ int main() {
     NetworkManager client;
     GameManager game;
     
-    Texture /*profileTexture,*/ typingButtonTexture, matchButtonTexture, korButtonTexture;
+    Texture profileTexture, typingButtonTexture, matchButtonTexture, korButtonTexture;
+    
 
     // 폰트 로드 실패일시 종속성 확인해보기
     if (!font.openFromFile("D2Coding.ttf")) {
@@ -42,21 +43,22 @@ int main() {
         cerr << "koreng 버튼 이미지 로드 실패!" << endl;
         return -1;
     }
-    //if (!profileTexture.loadFromFile("./assets/profile/profile.png")) {
-    //    cerr << "프로필 이미지 로드 실패!" << endl;
-    //    return -1;
-    //}
+    if (!profileTexture.loadFromFile("./assets/profile/profile.png")) {
+        cerr << "프로필 이미지 로드 실패!" << endl;
+        return -1;
+    }
+    
 
     //// 프로필 Sprite
-    //Sprite profileSprite(profileTexture);
-    //profileSprite.setTexture(profileTexture);
-    //profileSprite.setPosition(Vector2f(20.f, 20.f));  // 화면 왼쪽 상단에 위치
+    Sprite profileSprite(profileTexture);
+    profileSprite.setTexture(profileTexture);
+    profileSprite.setPosition(Vector2f(20.f, 20.f));  // 화면 왼쪽 상단에 위치
 
     //// 프로필 Text 설정 (왼쪽 상단)
-    //Text profileText(font, "My Profile");
-    //profileText.setPosition(Vector2f(100.f, 20.f));  // 이미지 오른쪽에 텍스트 배치
-    //profileText.setCharacterSize(30);
-    //profileText.setFillColor(Color::Black);
+    Text profileText(font, "My Profile");
+    profileText.setPosition(Vector2f(100.f, 20.f));  // 이미지 오른쪽에 텍스트 배치
+    profileText.setCharacterSize(30);
+    profileText.setFillColor(Color::Black);
 
 
     // 한글 Sprite 설정
@@ -101,7 +103,6 @@ int main() {
     //matchButtonSprite.setScale(Vector2f(0.5f, 0.5f));
     matchButtonSprite.setTexture(typingButtonTexture);
     matchButtonSprite.setPosition(Vector2f(320.f, 390.f));
-
 
 
     // 코딩 대결 Text 설정
