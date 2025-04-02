@@ -227,6 +227,46 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
         //return;
     }
 
+    // 플레이어 이미지 로드
+    Texture player1Texture, player2Texture;
+    if (!player1Texture.loadFromFile("./assets/image/player1_1.png") || !player1Texture.loadFromFile("./assets/image/player1_2.png")) {
+        cout << "플레이어 이미지 로드 실패!" << endl;
+        //return -1;
+    }
+    if (!player2Texture.loadFromFile("./assets/image/player2_1.png") || !player2Texture.loadFromFile("./assets/image/player2_2.png")) {
+        cout << "플레이어 이미지 로드 실패!" << endl;
+        //return -1;
+    }
+
+    // 초기 위치 설정
+    // 플레이어1 애니메이션 스프라이트 로드
+    std::vector<Texture> player1Textures(3);
+    player1Textures[0].loadFromFile("./assets/image/player1_1.png");
+    player1Textures[1].loadFromFile("./assets/image/player1_2.png");
+    // player1Textures[2].loadFromFile("player1_3.png");
+    Sprite player1Sprite(player1Textures[0]);
+    player1Sprite.setPosition(Vector2f(20.f, 10.f));
+    int player1Frame = 0;
+
+    // 플레이어2 애니메이션 스프라이트 로드
+    std::vector<Texture> player2Textures(3);
+    player2Textures[0].loadFromFile("./assets/image/player2_1.png");
+    player2Textures[1].loadFromFile("./assets/image/player2_2.png");
+    //player2Textures[2].loadFromFile("player1_3.png");
+    Sprite player2Sprite(player2Textures[0]);
+    player2Sprite.setPosition(Vector2f(20.f, 60.f));
+    int player2Frame = 0;
+
+    //float moveDistance = 20.f; // 한 문장 입력 시 이동 거리
+
+
+
+
+
+
+
+
+
     sf::Sprite sprite(ladderImg);
 
     // 사다리 1 이미지 설정
@@ -254,7 +294,7 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
 
     //------------------------------------타자 입력창 만들기------------------------------------
     // 타자 연습 문장 리스트
-    vector<wstring> sentences = { L"Hello", L"Welcome", L"Bye" };
+    vector<wstring> sentences = { L"Hello", L"Welcome", L"World", L"AB", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"Bye"};
     size_t currentSentenceIndex = 0;
     wstring userInput;
 
@@ -318,6 +358,8 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
 
 
     window.clear(Color::White);
+    window.draw(player1Sprite);             // player1
+    window.draw(player2Sprite);             // player2
     window.draw(Background);
     window.draw(gameText);
     window.draw(userInputText);
@@ -362,7 +404,38 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
                 else if (textEntered->unicode == 13) { // 엔터 입력 시 검증
                     if (userInput == sentences[currentSentenceIndex]) {
                         currentSentenceIndex++;
+                        int check = 0;
                         if (currentSentenceIndex < sentences.size()) {
+                           for (int i = 0; i < 5; i++) {
+                               player1Sprite.setColor(sf::Color(255, 255, 255, 255)); // 
+
+                               window.draw(player1Sprite);
+                             
+                                player1Sprite.setTexture(player1Textures[i%2]);
+                                player1Sprite.move(Vector2f(20.f, 0.f));  // 오른쪽으로 이동
+                                if (i == 2) {
+                                    if(check % 2 == 1){
+                                    player1Textures[1].loadFromFile("./assets/image/player1_1.png");
+                                    player1Textures[0].loadFromFile("./assets/image/player1_2.png");
+                                    }
+                                    else {
+                                        player1Textures[0].loadFromFile("./assets/image/player1_1.png");
+                                        player1Textures[1].loadFromFile("./assets/image/player1_2.png");
+                                    }
+                                }
+                             
+                                //window.clear(Color::White); 
+                                //player1Sprite.setColor(sf::Color(255, 255, 255, 0)); // 완전 투명
+                                player1Sprite.setColor(sf::Color(255, 255, 255, 255)); // 
+
+                                window.draw(player1Sprite);
+                                window.draw(player2Sprite);
+                                //window.draw(inputText);
+                                window.display();
+                                sf::sleep(sf::milliseconds(100));  // 애니메이션 속도 조절
+                           }
+                           check++;
+
                             userInput.clear();
                             currentSentence.setString(sentences[currentSentenceIndex]);
                             nextSentence.setString((currentSentenceIndex + 1 < sentences.size()) ? sentences[currentSentenceIndex + 1] : L"");
@@ -414,6 +487,8 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
 
 
         window.clear(Color::White);
+        window.draw(player1Sprite);             // player1
+        window.draw(player2Sprite);             // player2
         window.draw(Background);
         window.draw(gameText);
         window.draw(userInputText);
