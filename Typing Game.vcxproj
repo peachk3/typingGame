@@ -131,8 +131,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FileLoader.cpp" />
+    <ClCompile Include="TypingGame.cpp" />
+    <ClCompile Include="testCode_fileload_game.cpp" />
     <ClCompile Include="test.cpp" />
-    <ClCompile Include="TextLoader.cpp" />
+    <ClCompile Include="TextUtil.cpp" />
+    <ClCompile Include="TypingGame.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FileLoader.hpp" />
+    <ClInclude Include="TextUtil.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
