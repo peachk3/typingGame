@@ -1,3 +1,4 @@
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 #include "gameManager.h"
 #include <locale>
 #include <codecvt>
@@ -73,7 +74,7 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
         cerr << "이미지 로드 실패!" << endl;
         return;
     }
-
+     
     Sprite sprite(texture);
 
     //sprite.setPosition(Vector2f(float(GWINDOW_WIDTH / 2), float(GWINDOW_HEIGHT / 2))); // 초기 위치 설정
@@ -207,14 +208,22 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
     }
 }
 
+
+
+// 폰트 NanumGothic //
+
+// 게임 시작
 void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
+
+
     std::cout << "게임 시작창 이동 완료!!" << std::endl;
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 
     Texture ladderImg;
 
     // 이미지 로드
     if (!ladderImg.loadFromFile("./assets/image/ladder3.png")) {
-        cerr << "Typing 버튼 이미지 로드 실패!" << endl;
+        cerr << "사다리 이미지 로드 실패!" << endl;
         //return;
     }
 
@@ -228,7 +237,6 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
     //float scaleY = 50.f / ladderImgSize.y;
     ladderImgSpriteLeft.setTexture(ladderImg);
     ladderImgSpriteLeft.setPosition(Vector2f(100.f, 150.f));     // 왼쪽
-    //ladderImgSpriteLeft.setPosition(Vec)
 
     // 사다리 2 이미지 설정
     Sprite ladderImgSpriteRight(ladderImg);
@@ -237,43 +245,194 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
     //float scaleX = 30.f / ladderImgSize.x;
     //float scaleY = 50.f / ladderImgSize.y;
     ladderImgSpriteRight.setTexture(ladderImg);
-    ladderImgSpriteRight.setPosition(Vector2f(1080.f, 150.f));     // 오른쪽
-
-
-    //sf::FloatRect bounds = ladderImgSprite.getLocalBounds();
-
-    //sprite.setScale(scaleX, scaleY);
+    ladderImgSpriteRight.setPosition(Vector2f(1080.f, 150.f));     // 오른쪽 
 
     sf::Text gameText(font, L"게임 시작~~!", 60);
 
     gameText.setFillColor(Color::Red);
     gameText.setPosition(Vector2f(480.f, 50.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
 
+    //------------------------------------타자 입력창 만들기------------------------------------
+    // 타자 연습 문장 리스트
+    vector<wstring> sentences = { L"Hello", L"Welcome", L"Bye" };
+    size_t currentSentenceIndex = 0;
+    wstring userInput;
+
+    // 현재 문장 표시
+    Text currentSentence(font, sentences[currentSentenceIndex], 50);
+    FloatRect textBounds = currentSentence.getGlobalBounds();
+    currentSentence.setOrigin(textBounds.getCenter());
+    currentSentence.setFillColor(Color::Black);
+    currentSentence.setPosition(Vector2f(1280.f / 2, 300.f)); // 가운데 정렬
+
+    // 입력창 배경 생성
+    sf::RectangleShape inputBackground(sf::Vector2f(500.f, 40.f)); // 입력창 크기
+    FloatRect inputTextBounds = inputBackground.getGlobalBounds();
+    inputBackground.setOrigin(inputTextBounds.getCenter());
+
+    inputBackground.setPosition({ 1280.f / 2, 500.f });
+    inputBackground.setFillColor(sf::Color(240, 240, 240)); // 밝은 회색 배경
+    inputBackground.setOutlineThickness(2.f);
+    inputBackground.setOutlineColor(sf::Color(100, 100, 100)); // 테두리 색상
+
+    // 다음 문장 표시
+    Text nextSentence(font, L"", 20);
+    if (currentSentenceIndex + 1 < sentences.size()) {
+        nextSentence.setString(sentences[currentSentenceIndex + 1]);
+    }
+    FloatRect nextTextBounds = nextSentence.getGlobalBounds();
+    nextSentence.setOrigin(nextTextBounds.getCenter());
+    nextSentence.setFillColor(Color(32, 32, 32)); // 검은색에 가까운 회색
+    nextSentence.setPosition(Vector2f(1280.f / 2, 400.f)); // 가운데
+
+    // 불투명 배경 설정
+    sf::RectangleShape Background(sf::Vector2f(400.f, 70.f));
+    // 배경 크기 가져오기
+    FloatRect bgBounds = Background.getGlobalBounds();
+    Background.setOrigin(bgBounds.getCenter()); // 중앙 기준 정렬
+
+    Background.setFillColor(sf::Color(224, 224, 224, 200)); // 마지막 - 투명도
+    Background.setPosition(Vector2f(1280.f / 2, 400.f));
+    //Background.setOutlineThickness(1.f);
+    //Background.setOutlineColor(sf::Color(139, 0, 0)); // 테두리 색상
+
+    // 입력 표시
+    Text userInputText(font, L"", 30);
+    userInputText.setFillColor(Color::Green);
+    userInputText.setPosition(Vector2f(400.f, 485.f)); // 화면 정중앙
+
+    //--------------------------------------------------------------------------------------------
+
+    // userID 받아와서 출력 (
+    wstring user1ID = L"사용자 1"; // id 받아와서 넣기
+    wstring user2ID = L"사용자 2"; // id 받아와서 넣기
+
+    Text user1Text(font, user1ID, 20);
+    Text user2Text(font, user2ID, 20); 
+    user1Text.setFillColor(Color::Black);
+    user2Text.setFillColor(Color::Black);
+
+
+    user1Text.setPosition(Vector2f(600.f, 500.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
+    user2Text.setPosition(Vector2f(600.f, 100.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
+
+
     window.clear(Color::White);
+    window.draw(Background);
     window.draw(gameText);
+    window.draw(userInputText);
     window.draw(ladderImgSpriteLeft);       // 왼쪽
     window.draw(ladderImgSpriteRight);      // 오른쪽
+    window.draw(currentSentence);
+    window.draw(nextSentence);
+    //window.draw(user1Text);
+    //window.draw(user2Text);
+    window.draw(inputBackground);
     window.display();
 
+    // 커서 설정 추가
+    sf::Clock cursorClock;
+    bool showCursor = true;
+    sf::RectangleShape cursor(sf::Vector2f(2.f, 30.f));
+    cursor.setFillColor(sf::Color::Black);
+    cursor.setPosition({ 400.f, 485.f });
+
+
     while (window.isOpen()) {
-        while (std::optional event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-            {
+        bool isWindowClosed = false;
+
+        while (std::optional event = window.pollEvent()){
+            if (event->is<sf::Event::Closed>()){
                 isWindowClosed = true;
                 break;
             }
-
-            else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
-            {
-                if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
+            else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
+                if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
                     isWindowClosed = true;
-                break;
-
+                    break;
+                }
+            }
+            // 텍스트 입력 처리
+            else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
+                if (textEntered->unicode == 8) { // 백스페이스 처리
+                    if (!userInput.empty()) {
+                        userInput.pop_back();
+                    }
+                }
+                else if (textEntered->unicode == 13) { // 엔터 입력 시 검증
+                    if (userInput == sentences[currentSentenceIndex]) {
+                        currentSentenceIndex++;
+                        if (currentSentenceIndex < sentences.size()) {
+                            userInput.clear();
+                            currentSentence.setString(sentences[currentSentenceIndex]);
+                            nextSentence.setString((currentSentenceIndex + 1 < sentences.size()) ? sentences[currentSentenceIndex + 1] : L"");
+                        }
+                        else {
+                            gameText.setString(L"게임 종료!");
+                            currentSentence.setString(L"");
+                            nextSentence.setString(L"");
+                        }
+                    }
+                }
+                else {
+                    userInput += static_cast<wchar_t>(textEntered->unicode);
+                    std::wcout << L"입력된 문자: " << static_cast<wchar_t>(textEntered->unicode) << std::endl;
+               
+                }
+                // UTF-8로 변환하여 SFML Text에 설정
+                userInputText.setString(converter.to_bytes(userInput));
+                //userInputText.setString(userInput);
             }
         }
+
         if (isWindowClosed) {
             break;  // 창이 닫히면 반복문을 종료하여 게임을 진행
         }
+
+        // 커서 깜박임 업데이트
+        if (cursorClock.getElapsedTime().asMilliseconds() > 500) {
+            showCursor = !showCursor;
+            cursorClock.restart();
+        }
+
+        //sf::Vector2u textureSize = texture.getSize();
+        //float scaledWidth = textureSize.x * 0.2f;
+        //float scaledHeight = textureSize.y * 0.2f;
+        //sprite.setPosition({
+        //    window.getSize().x - scaledWidth - 20.f,
+        //    window.getSize().y - scaledHeight - 20.f
+        //    });
+
+        //// 커서 위치 업데이트
+        //float textWidth = userInputText.getLocalBounds().width;
+        //cursor.setPosition({ 300.f + textWidth, 350.f });
+
+
+        if (isWindowClosed) {
+            break;  // 창이 닫히면 반복문을 종료하여 게임을 진행
+        }
+
+
+        window.clear(Color::White);
+        window.draw(Background);
+        window.draw(gameText);
+        window.draw(userInputText);
+        window.draw(ladderImgSpriteLeft);
+        window.draw(ladderImgSpriteRight);
+        window.draw(currentSentence);
+        window.draw(nextSentence);
+        window.draw(inputBackground);  // 먼저 배경을 그림
+        window.draw(userInputText);    // 그 다음 텍스트를 그림
+        //window.draw(user1Text);
+        //window.draw(user2Text);
+
+        // 커서 표시 여부 결정
+        if (showCursor) {
+            window.draw(cursor);
+        }
+
+        //window.draw(inputBackground);
+        window.display();
     }
+
 }

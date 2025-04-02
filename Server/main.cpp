@@ -21,11 +21,17 @@ int main() {
     NetworkManager client;
     GameManager game;
     
-    Texture /*profileTexture,*/ typingButtonTexture, matchButtonTexture, korButtonTexture;
+    Texture profileTexture, backGroundTexture, typingButtonTexture, matchButtonTexture, korButtonTexture;
 
     // 폰트 로드 실패일시 종속성 확인해보기
     if (!font.openFromFile("D2Coding.ttf")) {
         std::cerr << "폰트 로드 실패!" << std::endl;
+        return -1;
+    }
+
+    // 배경 이미지 로드
+    if (!backGroundTexture.loadFromFile("./assets/image/bgimg.png")) {
+        cerr << "배경 이미지 로드 실패!" << endl;
         return -1;
     }
 
@@ -42,22 +48,40 @@ int main() {
         cerr << "koreng 버튼 이미지 로드 실패!" << endl;
         return -1;
     }
-    //if (!profileTexture.loadFromFile("./assets/profile/profile.png")) {
-    //    cerr << "프로필 이미지 로드 실패!" << endl;
-    //    return -1;
-    //}
+    if (!profileTexture.loadFromFile("./assets/image/user.png")) {
+        cerr << "프로필 이미지 로드 실패!" << endl;
+        return -1;
+    }
 
-    //// 프로필 Sprite
-    //Sprite profileSprite(profileTexture);
+    // 프로필 Sprite
+    Sprite profileSprite(profileTexture);
+    Vector2u profileTextureSize = profileTexture.getSize();
+    float scalexX = 50.f / profileTextureSize.x;  // 가로 크기를 50px로 조정
+    float scaleyY = 50.f / profileTextureSize.y;   // 세로 크기를 50px로 조정
+    profileSprite.setScale(Vector2(scalexX, scaleyY));
     //profileSprite.setTexture(profileTexture);
-    //profileSprite.setPosition(Vector2f(20.f, 20.f));  // 화면 왼쪽 상단에 위치
+    profileSprite.setPosition(Vector2f(20.f, 20.f));  // 화면 왼쪽 상단에 위치
 
-    //// 프로필 Text 설정 (왼쪽 상단)
-    //Text profileText(font, "My Profile");
-    //profileText.setPosition(Vector2f(100.f, 20.f));  // 이미지 오른쪽에 텍스트 배치
+
+    // 프로필 Text 설정 (왼쪽 상단)
+    Text profileText(font, "My Profile", 20);
+    profileText.setPosition(Vector2f(100.f, 20.f));  // 이미지 오른쪽에 텍스트 배치
     //profileText.setCharacterSize(30);
-    //profileText.setFillColor(Color::Black);
+    profileText.setFillColor(Color::Black);
 
+    // 배경 sprite 설정
+    Sprite backGroundSprite(backGroundTexture);
+    Vector2u backTextureSize = backGroundTexture.getSize();
+    //backGroundSprite.setScale(Vector2(scaleX, scaleY));
+    backGroundSprite.setTexture(backGroundTexture);
+    backGroundSprite.setPosition(Vector2f(0.f, 0.f));
+
+    // 불투명 배경 설정
+    sf::RectangleShape whiteBackground(sf::Vector2f(800.f, 400.f));
+    whiteBackground.setPosition({ 200.f, 150.f });
+    whiteBackground.setFillColor(sf::Color(255, 255, 255, 200)); // 마지막 - 투명도
+    whiteBackground.setOutlineThickness(1.f);
+    whiteBackground.setOutlineColor(sf::Color(100, 100, 100)); // 테두리 색상
 
     // 한글 Sprite 설정
     Sprite korengButtonSprite(typingButtonTexture);
@@ -95,13 +119,12 @@ int main() {
     // 코딩 대결 Sprite 설정
     Sprite matchButtonSprite(typingButtonTexture);
     //Vector2u textureSize = typingButtonTexture.getSize();
-    //float scaleX = 100.f / textureSize.x;  // 가로 크기를 100px로 조정
+    //float scaleX = 100.f / textureSize.x;  // 가로 크기를 100px로 조정 
     //float scaleY = 50.f / textureSize.y;   // 세로 크기를 50px로 조정
     matchButtonSprite.setScale(Vector2(scaleX, scaleY));
     //matchButtonSprite.setScale(Vector2f(0.5f, 0.5f));
     matchButtonSprite.setTexture(typingButtonTexture);
     matchButtonSprite.setPosition(Vector2f(320.f, 390.f));
-
 
 
     // 코딩 대결 Text 설정
@@ -169,7 +192,10 @@ int main() {
 
         // 화면 그리기
         window.clear(Color::White);
-        //window.draw(profileText);    // 왼쪽 상단에 profileText 그리기
+        window.draw(backGroundSprite); // 배경 사진 
+        window.draw(whiteBackground);  // 하얀색 배경 
+        window.draw(profileSprite);
+        window.draw(profileText);    // 왼쪽 상단에 profileText 그리기
         window.draw(typingButtonSprite);  // Typing 버튼 이미지 그리기
         window.draw(typingButtonText);  // Typing Text 이미지 그리기
         window.draw(matchButtonSprite);  // 1:1 Match 버튼 이미지 그리기
