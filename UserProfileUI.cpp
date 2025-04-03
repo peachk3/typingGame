@@ -1,17 +1,7 @@
+#include "UserProfileUI.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-struct UserInfo
-{
-	std::wstring id;
-	std::wstring nickname;
-	std::wstring rank;
-	std::wstring maxTpm;
-	std::wstring maxWpm;
-	std::wstring playTime;
-	std::wstring point;
-
-};
 
 // 결과창을 윈도우 비율에 맞게 만들기 위한 함수
 sf::RectangleShape makeRectangle(sf::RenderWindow& window, float widthRatio, float heightRatio)
@@ -74,13 +64,13 @@ sf::Vector2f getCenterXPosition(sf::Vector2f targetSize,
 }
 
 // 왼쪽 정렬
-sf::Vector2f LeftInnerAlign(sf::FloatRect& refBounds, float x_margin = 0.f)
+sf::Vector2f LeftInnerAlign(sf::FloatRect& refBounds, float x_margin)
 {
 	return { refBounds.position.x + x_margin, refBounds.position.y };
 }
 
 // 오른쪽 정렬
-sf::Vector2f RightInnerAlign(sf::Vector2f targetSize, sf::FloatRect& refBounds, float x_margin = 0.f)
+sf::Vector2f RightInnerAlign(sf::Vector2f targetSize, sf::FloatRect& refBounds, float x_margin)
 {
 	return { refBounds.position.x + refBounds.size.x - targetSize.x - x_margin, refBounds.position.y };
 }
@@ -98,7 +88,7 @@ sf::Image loadImg(std::wstring path)
 }
 
 // 이미지 리사이즈
-sf::Image resizeImageKeepAspect(const sf::Image& src, sf::Vector2u targetSize, sf::Color paddingColor = sf::Color::Transparent)
+sf::Image resizeImageKeepAspect(const sf::Image& src, sf::Vector2u targetSize, sf::Color paddingColor)
 {
 	sf::Vector2u srcSize = src.getSize();
 	float srcAspect = static_cast<float>(srcSize.x) / srcSize.y;

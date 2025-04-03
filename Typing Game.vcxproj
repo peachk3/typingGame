@@ -131,8 +131,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SelectImg.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="UserProfileUI.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="UserProfileUI.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
