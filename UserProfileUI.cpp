@@ -152,8 +152,10 @@ sf::Image resizeImageKeepAspect(const sf::Image& src, sf::Vector2u targetSize, s
 
 
 
-void initUI(sf::RenderWindow& window, sf::Font& font, sf::Sprite& profileImg, UserInfo info,
-	std::vector<std::shared_ptr<sf::Drawable>>& drawables, std::vector<sf::Text>& profileTexts)
+void initProfileUI(sf::RenderWindow& window, sf::Font& font, sf::Sprite& profileImg, UserInfo info,
+	std::vector<std::shared_ptr<sf::Drawable>>& drawables, 
+	std::vector<sf::Text>& profileTexts, 
+	sf::FloatRect& loadButtonBound)
 {
 
 	// 윈도우 생성
@@ -211,7 +213,7 @@ void initUI(sf::RenderWindow& window, sf::Font& font, sf::Sprite& profileImg, Us
 
 
 	// 버튼 텍스트
-	sf::Text loadButtonText(font, L"프로필 이미지 선택", 18);
+	sf::Text loadButtonText(font, L"프로필 이미지 선택", 20);
 
 	// 프로필 위치 설정
 	center = profileBox_Image.getPosition();
@@ -226,6 +228,13 @@ void initUI(sf::RenderWindow& window, sf::Font& font, sf::Sprite& profileImg, Us
 	box = loadButton.getGlobalBounds();
 	bounds = loadButtonText.getGlobalBounds();
 	loadButtonText.setPosition(getCenterPosition(bounds.size, box));
+	// 텍스트 위치 조정 (한글)
+	bounds = loadButtonText.getGlobalBounds();
+	loadButtonText.setPosition({ bounds.position.x, bounds.position.y - 6.f });
+	
+	// 버튼 이벤트를 위해 위치 받아옴
+	bounds = loadButton.getGlobalBounds();
+	loadButtonBound = bounds;
 
 	// 사용자 정보 텍스트
 	std::vector<std::pair<std::wstring, std::wstring>> profileStats = {
@@ -318,9 +327,9 @@ int main()
 	info.point = L"230";
 
 	// 이것도 init에 넣고 싶었는데 잘 안됨..
-	std::vector<sf::Text> labelTexts;
+	/*std::vector<sf::Text> labelTexts;
 	std::vector<sf::Text> colonTexts;
-	std::vector<sf::Text> valueTexts;
+	std::vector<sf::Text> valueTexts;*/
 
 	// 기본 프로필 설정
 	std::wstring imgPath = L"assets/profile_img/default_avatar.png";
@@ -331,8 +340,8 @@ int main()
 
 	std::vector<std::shared_ptr<sf::Drawable>> drawables;
 	std::vector<sf::Text> profileTexts;
-
-	initContainer(window, font, imgSprite, info, drawables, profileTexts);
+	sf::FloatRect loadButtonBound;
+	initProfileUI(window, font, imgSprite, info, drawables, profileTexts, loadButtonBound);
 
 	while (window.isOpen())
 	{
