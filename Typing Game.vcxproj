@@ -131,11 +131,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="mainLogic.cpp" />
     <ClCompile Include="SelectImg.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="UserProfileSelectUI.cpp" />
     <ClCompile Include="UserProfileUI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="UserProfileSelectUI.hpp" />
     <ClInclude Include="UserProfileUI.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
