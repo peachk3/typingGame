@@ -132,7 +132,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Client\main.cpp" />
-    <ClCompile Include="..\Client\ServerManager.cpp" />
+    <ClCompile Include="..\Client\ServerManager_V02.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="ServerManager.cpp" />
+    <ClCompile Include="ServerManager_origin.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="serverManager.h" />

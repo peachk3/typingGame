@@ -1,3 +1,5 @@
+#pragma once
+
 #include "serverManager.h"
 #include <SFML/Network.hpp>
 #include <iostream>
@@ -7,6 +9,11 @@
 #include <thread>
 #include <mutex>
 #include <map>
+
+using namespace std;
+using namespace sf;
+
+
 
 ServerManager::ServerManager() {
     // 서버가 53000 포트에서 연결을 기다리도록 설정
@@ -74,8 +81,10 @@ void ServerManager::matchClients() {
     // 매칭된 클라이언트 두 명을 대기열에서 제거하고, 게임 시작 메시지 전송
     sf::TcpSocket* client1 = waitingClients.front();
     waitingClients.erase(waitingClients.begin());  // 첫 번째 클라이언트 제거
+    cout << "client1 제거" << endl;
     sf::TcpSocket* client2 = waitingClients.front();
     waitingClients.erase(waitingClients.begin());  // 두 번째 클라이언트 제거
+    cout << "client2 제거" << endl;
 
     //// 매칭된 클라이언트 목록에 추가
     //matchedClients.push_back(client1);
@@ -88,3 +97,41 @@ void ServerManager::matchClients() {
     std::cout << "게임 시작 메시지 전송 완료!" << std::endl;
 
 }
+void ServerManager::handleClient(sf::TcpSocket* client) {
+    while (true) {
+        sf::Packet packet;
+        if (client->receive(packet) == sf::Socket::Status::Done) {
+            std::string tag;
+            float x, y;
+            packet >> tag >> x >> y;
+
+            if (tag == "MOVE") {
+                std::cout << "클라이언트 이동 감지: (" << x << ", " << y << ")" << std::endl;
+
+                // 모든 클라이언트에게 이동 데이터 전송
+                std::lock_guard<std::mutex> lock(clientMutex);
+                for (auto& pair : sockets) {
+                    sf::Packet sendPacket;
+                    sendPacket << "MOVE" << x << y;
+                    pair.second->send(sendPacket);
+                }
+            }
+        }
+    }
+}
+
+// 클라 1 , 클라 2 서버에 접속
+// 소켓아이디 부여 int 클라1 (1) 클라2 (2)
+// map 자료구조 <int , socket> sockets
+// 태그, 정보값 ex) move, x, y좌표
+// if 태그가 move면 이동함수
+// sockets[id]  for
+// 서버 규칙, 클라이언트에서 따르기
+// 클라1 -> 서버로 위치값 전송
+// 서버는 위치값을 2명한테 보내주기
+// 패킷받고 클라에서 서버위치 기반으로 렌더링
+
+// x, y 좌표 변수 만들기 
+// 엔터 쳐지면 서버에 Direction 메세지 보내기
+// 서버에서 Direction 받아서 처리
+// 클라1 함수, 클라2 함수 작성

@@ -1,25 +1,95 @@
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+ï»¿#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#pragma once    // <<------- ì¤‘ë³µí—¤ë” í•œë²ˆë§Œ ì°¸ì¡°í•˜ê²Œ í•´ì£¼ëŠ” ì „ì²˜ë¦¬ê¸° C++ ì—ì„  ì´ê±° ì“°ì‹­ì‡¼
 #include "gameManager.h"
+#include "networkManager.h"
 #include <locale>
 #include <codecvt>
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <sstream>  // ¹®ÀÚ¿­ ½ºÆ®¸²À» »ç¿ëÇÏ±â À§ÇÑ Çì´õ
-#include <iomanip>  // ½Ã°£À» Çü½Ä¿¡ ¸Â°Ô Ãâ·ÂÇÏ±â À§ÇÑ Çì´õ
+#include <sstream>  // ë¬¸ìì—´ ìŠ¤íŠ¸ë¦¼ì„ ì‚¬ìš©í•˜ê¸° ìœ„í•œ í—¤ë”
+#include <iomanip>  // ì‹œê°„ì„ í˜•ì‹ì— ë§ê²Œ ì¶œë ¥í•˜ê¸° ìœ„í•œ í—¤ë”
 #include <SFML/Network.hpp>
+//#include <SFML/Network.hpp>
+//#include <iostream>
+//#include <NetworkManager.cpp>
+
+GameManager game;
+
+//NetworkManager network;
+//bool connectToServer() {
+//    if (socket.connect({ 210, 119, 12, 65}, 53000) == sf::Socket::Status::Done) {
+//        std::cout << "ì„œë²„ ì—°ê²° ì„±ê³µ!" << std::endl;
+//        return true;
+//    }
+//    else {
+//        std::cerr << "ì„œë²„ ì—°ê²° ì‹¤íŒ¨!" << std::endl;
+//        return false;
+//    }
+//}
+
+
+
+//void ServerManager::handleClient(sf::TcpSocket* client) {
+//    while (true) {
+//        sf::Packet packet;
+//        if (client->receive(packet) == sf::Socket::Status::Done) {
+//            std::string tag;
+//            float x, y;
+//            packet >> tag >> x >> y;
+//
+//            if (tag == "MOVE") {
+//                std::cout << "í´ë¼ì´ì–¸íŠ¸ ì´ë™ ê°ì§€: (" << x << ", " << y << ")" << std::endl;
+//
+//                // ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì´ë™ ë°ì´í„° ì „ì†¡
+//                for (auto& c : connectedClients) {
+//                    sf::Packet sendPacket;
+//                    sendPacket << "MOVE" << x << y;
+//                    c->send(sendPacket);
+//                }
+//            }
+//        }
+//    }
+//}
+
+// í”Œë ˆì´ì–´ ìœ„ì¹˜ ê°±ì‹  í•¨ìˆ˜
+
+//void GameManager::updatePlayerPosition(int clientID, float x, float y) {
+//    std::map<int, sf::Sprite*> players;
+//    players[1] = &player1Sprite;
+//    players[2] = &player2Sprite;
+//    if (players.find(clientID) != players.end()) {  // í”Œë ˆì´ì–´ê°€ ì¡´ì¬í•˜ë©´
+//        players[clientID].setPosition(x, y);  // ìœ„ì¹˜ ì—…ë°ì´íŠ¸
+//        std::cout << "í”Œë ˆì´ì–´ " << clientID << " ìœ„ì¹˜ ê°±ì‹ : (" << x << ", " << y << ")" << std::endl;
+//    }
+//    else {
+//        std::cerr << "í”Œë ˆì´ì–´ " << clientID << "ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŒ!" << std::endl;
+//    }
+//}
+
+// GameManager.cppì—ì„œ sendMove() í˜¸ì¶œí•˜ëŠ” ë°©ë²• : NetWorkManagerë¥¼ í†µí•´ì„œ ì‹¤í–‰
+//void GameManager::playerMove(float x, float y) {
+//    // í´ë¼ì´ì–¸íŠ¸ê°€ ì´ë™í•˜ë©´ ì„œë²„ì— ì „ì†¡
+//    network.sendMove(x, y);
+//}
+
 
 using namespace sf;
 using namespace std;
-GameManager game;
-
+//GameManager game;
+//NetworkManager client;
+//NetworkManager::getInstance();
+NetworkManager& client = NetworkManager::getInstance();
+// í™”ë©´ í¬ê¸° ì •ì˜
+const float SCREEN_WIDTH = 1280.f;
+const float SCREEN_HEIGHT = 720.f;
 const int GWINDOW_WIDTH = 300;
 const int GWINDOW_HEIGHT = 250;
-const float ROTATION_SPEED = 60.f;  // È¸Àü ¼Óµµ (1ÃÊ´ç nµµ È¸Àü)
+const float ROTATION_SPEED = 60.f;  // íšŒì „ ì†ë„ (1ì´ˆë‹¹ në„ íšŒì „)
 
-// ID ÀÔ·ÂÃ¢
+// ID ì…ë ¥ì°½
 void showIDInputScreen(sf::RenderWindow& window, sf::Font& font, std::string& clientID) {
-    sf::Text idText(font, L"¾ÆÀÌµğ¸¦ ÀÔ·ÂÇÏ¼¼¿ä: ", 30);
+    sf::Text idText(font, L"ì•„ì´ë””ë¥¼ ì…ë ¥í•˜ì„¸ìš”: ", 30);
     idText.setFillColor(sf::Color::White);
     idText.setPosition(sf::Vector2f(200.f, 300.f));
 
@@ -39,20 +109,20 @@ void showIDInputScreen(sf::RenderWindow& window, sf::Font& font, std::string& cl
                 window.close();
             }
             else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
-                if (textEntered->unicode == 8 && clientID.length() > 0) {  // ¹é½ºÆäÀÌ½º
+                if (textEntered->unicode == 8 && clientID.length() > 0) {  // ë°±ìŠ¤í˜ì´ìŠ¤
                     clientID.pop_back();
                 }
-                else if (textEntered->unicode < 128) {  // ¹®ÀÚ ÀÔ·Â
+                else if (textEntered->unicode < 128) {  // ë¬¸ì ì…ë ¥
                     clientID += static_cast<char>(textEntered->unicode);
                 }
             }
             else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->scancode == sf::Keyboard::Scancode::Enter) {
-                    inputComplete = true;  // Enter Å°·Î ÀÔ·Â ¿Ï·á
+                    inputComplete = true;  // Enter í‚¤ë¡œ ì…ë ¥ ì™„ë£Œ
                 }
             }
         }
-        inputText.setString(clientID);  // ÀÔ·ÂµÈ ¾ÆÀÌµğ È­¸é¿¡ Ç¥½Ã
+        inputText.setString(clientID);  // ì…ë ¥ëœ ì•„ì´ë”” í™”ë©´ì— í‘œì‹œ
         window.clear();
         window.draw(idText);
         window.draw(inputText);
@@ -63,60 +133,60 @@ void showIDInputScreen(sf::RenderWindow& window, sf::Font& font, std::string& cl
     }
 }
 
-// ·ÎµùÃ¢ ¼³Á¤
+// ë¡œë”©ì°½ ì„¤ì •
 void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bool& isMatching) {
 
-    RenderWindow gameWindow(VideoMode({ GWINDOW_WIDTH, GWINDOW_HEIGHT }), L"°ÔÀÓ È­¸é");
+    RenderWindow gameWindow(VideoMode({ GWINDOW_WIDTH, GWINDOW_HEIGHT }), L"ê²Œì„ í™”ë©´");
 
-    // ÅØ½ºÃ³¿Í ½ºÇÁ¶óÀÌÆ® ·Îµå
+    // í…ìŠ¤ì²˜ì™€ ìŠ¤í”„ë¼ì´íŠ¸ ë¡œë“œ
     Texture texture;
-    if (!texture.loadFromFile("./loading.png")) {  // "loading.png"´Â ÁØºñÇØ¾ß ÇÔ
-        cerr << "ÀÌ¹ÌÁö ·Îµå ½ÇÆĞ!" << endl;
+    if (!texture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/loading.png")) {  // "loading.png"ëŠ” ì¤€ë¹„í•´ì•¼ í•¨
+        cerr << "ì´ë¯¸ì§€ ë¡œë“œ ì‹¤íŒ¨!" << endl;
         return;
     }
      
     Sprite sprite(texture);
 
-    //sprite.setPosition(Vector2f(float(GWINDOW_WIDTH / 2), float(GWINDOW_HEIGHT / 2))); // ÃÊ±â À§Ä¡ ¼³Á¤
+    //sprite.setPosition(Vector2f(float(GWINDOW_WIDTH / 2), float(GWINDOW_HEIGHT / 2))); // ì´ˆê¸° ìœ„ì¹˜ ì„¤ì •
 
-    // ½ºÇÁ¶óÀÌÆ® ¿øÁ¡ ¼³Á¤ (Áß¾ÓÀ¸·Î È¸ÀüÇÏµµ·Ï)
+    // ìŠ¤í”„ë¼ì´íŠ¸ ì›ì  ì„¤ì • (ì¤‘ì•™ìœ¼ë¡œ íšŒì „í•˜ë„ë¡)
     sprite.setOrigin(Vector2f(texture.getSize().x / 2.f, texture.getSize().y / 2.f));
-    sprite.setPosition(Vector2f(GWINDOW_WIDTH / 2, GWINDOW_HEIGHT / 2));  // È­¸é Áß¾ÓÀ¸·Î ÀÌµ¿
+    sprite.setPosition(Vector2f(GWINDOW_WIDTH / 2, GWINDOW_HEIGHT / 2));  // í™”ë©´ ì¤‘ì•™ìœ¼ë¡œ ì´ë™
 
-    Text statusText(font, L"»ó´ë °Ë»öÁß...", 30);
+    Text statusText(font, L"ìƒëŒ€ ê²€ìƒ‰ì¤‘...", 30);
     statusText.setFillColor(Color::Black);
     statusText.setPosition(Vector2f(GWINDOW_WIDTH / 2 - 75, (GWINDOW_HEIGHT / 2) - 100));
 
-    Text timerText(font, "00:00", 30);  // ½Ã°£ Ç¥½Ã ÅØ½ºÆ®
+    Text timerText(font, "00:00", 30);  // ì‹œê°„ í‘œì‹œ í…ìŠ¤íŠ¸
     timerText.setFillColor(Color::Black);
     timerText.setPosition(Vector2f(GWINDOW_WIDTH / 2 - 35, (GWINDOW_HEIGHT / 2) - 70));
 
-    Text matchingText(font, L"»ó´ë ¿¬°á ¿Ï·á!", 30);  // Matching! ÅØ½ºÆ®
+    Text matchingText(font, L"ìƒëŒ€ ì—°ê²° ì™„ë£Œ!", 30);  // Matching! í…ìŠ¤íŠ¸
     matchingText.setFillColor(Color::Black);
     matchingText.setPosition(Vector2f(GWINDOW_WIDTH / 2 - 100, (GWINDOW_HEIGHT / 2) - 100));
 
-    Text countdownText(font, "", 50);  // Ä«¿îÆ®´Ù¿î ÅØ½ºÆ®
+    Text countdownText(font, "", 50);  // ì¹´ìš´íŠ¸ë‹¤ìš´ í…ìŠ¤íŠ¸
     countdownText.setFillColor(Color::Black);
-    countdownText.setPosition(Vector2f(GWINDOW_WIDTH / 2 - 10, (GWINDOW_HEIGHT / 2 - 20)));  // Matching! ¾Æ·¡¿¡ Ç¥½Ã
+    countdownText.setPosition(Vector2f(GWINDOW_WIDTH / 2 - 10, (GWINDOW_HEIGHT / 2 - 20)));  // Matching! ì•„ë˜ì— í‘œì‹œ
 
-    Clock clock;  // °ÔÀÓ ½ÇÇà ½Ã°£ ÃøÁ¤À» À§ÇÑ ½Ã°è
-    Clock countdownClock;  // Ä«¿îÆ®´Ù¿îÀ» À§ÇÑ ½Ã°è
+    Clock clock;  // ê²Œì„ ì‹¤í–‰ ì‹œê°„ ì¸¡ì •ì„ ìœ„í•œ ì‹œê³„
+    Clock countdownClock;  // ì¹´ìš´íŠ¸ë‹¤ìš´ì„ ìœ„í•œ ì‹œê³„
     Time elapsedTime;
 
-    //bool isMatching = false;  // ¸ÅÄª »óÅÂ ÃßÀû
-    int countdown = 3;  // Ä«¿îÆ®´Ù¿î ½ÃÀÛ
+    //bool isMatching = false;  // ë§¤ì¹­ ìƒíƒœ ì¶”ì 
+    int countdown = 3;  // ì¹´ìš´íŠ¸ë‹¤ìš´ ì‹œì‘
     bool countdownStarted = false;
     bool gameStartDisplayed = false;
 
 
-    // ¼­¹ö¿¡¼­ ¹ŞÀº Ä«¿îÆ®´Ù¿î ½ÃÀÛ ½Ã°¢ (¼­¹ö ½Ã°£)
-    // ÀÌ °ªÀº ¼­¹ö¿Í ¿¬°áµÈ ³×Æ®¿öÅ© ÄÚµå¿¡¼­ ¼³Á¤ÇØ¾ß ÇÔ
+    // ì„œë²„ì—ì„œ ë°›ì€ ì¹´ìš´íŠ¸ë‹¤ìš´ ì‹œì‘ ì‹œê° (ì„œë²„ ì‹œê°„)
+    // ì´ ê°’ì€ ì„œë²„ì™€ ì—°ê²°ëœ ë„¤íŠ¸ì›Œí¬ ì½”ë“œì—ì„œ ì„¤ì •í•´ì•¼ í•¨
     Time serverStartTime;
     bool serverTimeReceived = false;
     bool gameStarted = false;
 
     while (gameWindow.isOpen()) {
-        // ÀÌº¥Æ® Ã³¸® (SFML 3.0.0 ¹æ½Ä)
+        // ì´ë²¤íŠ¸ ì²˜ë¦¬ (SFML 3.0.0 ë°©ì‹)
         std::optional<Event> event;
         while (const std::optional event = gameWindow.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
@@ -126,45 +196,45 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
             }
         }
 
-        // ³×Æ®¿öÅ©¿¡¼­ ¸ÅÄª Á¤º¸ ¹× Ä«¿îÆ®´Ù¿î ½ÃÀÛ ½Ã°£ ¼ö½Å (¿¹½Ã)
-        // ½ÇÁ¦·Î´Â ³×Æ®¿öÅ© ÄÚµå¿¡¼­ ÀÌ º¯¼öµéÀ» ¼³Á¤ÇØ¾ß ÇÕ´Ï´Ù
+        // ë„¤íŠ¸ì›Œí¬ì—ì„œ ë§¤ì¹­ ì •ë³´ ë° ì¹´ìš´íŠ¸ë‹¤ìš´ ì‹œì‘ ì‹œê°„ ìˆ˜ì‹  (ì˜ˆì‹œ)
+        // ì‹¤ì œë¡œëŠ” ë„¤íŠ¸ì›Œí¬ ì½”ë“œì—ì„œ ì´ ë³€ìˆ˜ë“¤ì„ ì„¤ì •í•´ì•¼ í•©ë‹ˆë‹¤
         if (isMatching && !serverTimeReceived) {
-            // ¼­¹ö·ÎºÎÅÍ Ä«¿îÆ®´Ù¿î ½ÃÀÛ ½Ã°£ ¼ö½Å (¿¹½Ã)
-            // serverStartTime = ¼­¹ö¿¡¼­ ¹ŞÀº ½Ã°£
-            cout << "Ä«¿îÆ®´Ù¿î ½ÃÀÛ!" << endl;
+            // ì„œë²„ë¡œë¶€í„° ì¹´ìš´íŠ¸ë‹¤ìš´ ì‹œì‘ ì‹œê°„ ìˆ˜ì‹  (ì˜ˆì‹œ)
+            // serverStartTime = ì„œë²„ì—ì„œ ë°›ì€ ì‹œê°„
+            cout << "ì¹´ìš´íŠ¸ë‹¤ìš´ ì‹œì‘!" << endl;
             serverTimeReceived = true;
-            countdownClock.restart(); // ¼­¹ö ½Ã°£À» ¹ŞÀº ½ÃÁ¡ºÎÅÍ ·ÎÄÃ ½Ã°è ½ÃÀÛ
+            countdownClock.restart(); // ì„œë²„ ì‹œê°„ì„ ë°›ì€ ì‹œì ë¶€í„° ë¡œì»¬ ì‹œê³„ ì‹œì‘
         }
-        // ¸ÅÄªÀÌ µÈ °æ¿ì Ä«¿îÆ®´Ù¿î Ã³¸®
+        // ë§¤ì¹­ì´ ëœ ê²½ìš° ì¹´ìš´íŠ¸ë‹¤ìš´ ì²˜ë¦¬
         if (isMatching && serverTimeReceived) {
             //cout << "isMatching: " << isMatching << "serverTimeReceived:" << serverTimeReceived << endl;
             gameWindow.clear(Color::White);
             gameWindow.draw(matchingText);
 
-            // ¼­¹ö ½Ã°£¿¡ ¸ÂÃç ·ÎÄÃ Ä«¿îÆ®´Ù¿î °è»ê
+            // ì„œë²„ ì‹œê°„ì— ë§ì¶° ë¡œì»¬ ì¹´ìš´íŠ¸ë‹¤ìš´ ê³„ì‚°
             float elapsedCountdownTime = countdownClock.getElapsedTime().asSeconds();
 
-            // Ä«¿îÆ®´Ù¿î °ª °è»ê (¼­¹ö ½Ã°£ ±âÁØ)
+            // ì¹´ìš´íŠ¸ë‹¤ìš´ ê°’ ê³„ì‚° (ì„œë²„ ì‹œê°„ ê¸°ì¤€)
             int currentCountdown = countdown - static_cast<int>(elapsedCountdownTime);
             //std::cout << "currentCountdown: " << currentCountdown << std::endl;
             if (currentCountdown <= 0 && !gameStarted) {
-                // Ä«¿îÆ®´Ù¿î Á¾·á, °ÔÀÓ ½ÃÀÛ
+                // ì¹´ìš´íŠ¸ë‹¤ìš´ ì¢…ë£Œ, ê²Œì„ ì‹œì‘
                 countdownText.setString("Start Game!");
                 countdownText.setPosition(Vector2f(GWINDOW_WIDTH / 2 - 135, GWINDOW_HEIGHT / 2 - 50));
-                countdown = 0;  // Ä«¿îÆ®´Ù¿î ½ÃÀÛ
+                countdown = 0;  // ì¹´ìš´íŠ¸ë‹¤ìš´ ì‹œì‘
                 gameWindow.draw(countdownText);
                 //gameWindow.draw(countdownText);
                 //gameWindow.display();
-                std::cout << "Àá½ÃÈÄ °ÔÀÓ ½ÃÀÛ!!" << std::endl;
-                gameStarted = true;  // °ÔÀÓ ½ÃÀÛ ÇÃ·¡±× ¼³Á¤
-                isMatching = 0;  // ¸ÅÄª »óÅÂ º¯°æ (Áßº¹ ½ÇÇà ¹æÁö)
-                // Àá½Ã ´ë±â ÈÄ °ÔÀÓ ½ÃÀÛ
+                std::cout << "ì ì‹œí›„ ê²Œì„ ì‹œì‘!!" << std::endl;
+                gameStarted = true;  // ê²Œì„ ì‹œì‘ í”Œë˜ê·¸ ì„¤ì •
+                isMatching = 0;  // ë§¤ì¹­ ìƒíƒœ ë³€ê²½ (ì¤‘ë³µ ì‹¤í–‰ ë°©ì§€)
+                // ì ì‹œ ëŒ€ê¸° í›„ ê²Œì„ ì‹œì‘
                 std::this_thread::sleep_for(std::chrono::seconds(1));
                 gameWindow.close();
                 return;
             }
             else {
-                // Ä«¿îÆ®´Ù¿î Ç¥½Ã
+                // ì¹´ìš´íŠ¸ë‹¤ìš´ í‘œì‹œ
                 if (gameStarted != true) {
                     countdownText.setString(to_string(currentCountdown));
                     gameWindow.draw(countdownText);
@@ -178,30 +248,30 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
             gameWindow.display();
         }
 
-        // ¸ÅÄª ½ÇÆĞÇßÀ» °æ¿ì
+        // ë§¤ì¹­ ì‹¤íŒ¨í–ˆì„ ê²½ìš°
         else if (gameStarted != true) {
-            // deltaTimeÀ» °è»êÇÏ¿© È¸Àü ¼Óµµ Àû¿ë
-            Time deltaTime = clock.restart();  // ÀÌÀü ÇÁ·¹ÀÓ¿¡¼­ °æ°úÇÑ ½Ã°£
-            elapsedTime += deltaTime;  // ÀüÃ¼ °æ°ú ½Ã°£ ´©Àû
+            // deltaTimeì„ ê³„ì‚°í•˜ì—¬ íšŒì „ ì†ë„ ì ìš©
+            Time deltaTime = clock.restart();  // ì´ì „ í”„ë ˆì„ì—ì„œ ê²½ê³¼í•œ ì‹œê°„
+            elapsedTime += deltaTime;  // ì „ì²´ ê²½ê³¼ ì‹œê°„ ëˆ„ì 
 
-            // ÀÌ¹ÌÁö 360µµ È¸Àü
-            sprite.rotate(degrees(ROTATION_SPEED) * deltaTime.asSeconds());  // ÃÊ´ç ROTATION_SPEEDµµ¾¿ È¸Àü
+            // ì´ë¯¸ì§€ 360ë„ íšŒì „
+            sprite.rotate(degrees(ROTATION_SPEED) * deltaTime.asSeconds());  // ì´ˆë‹¹ ROTATION_SPEEDë„ì”© íšŒì „
 
-            // °æ°úµÈ ½Ã°£ °è»ê (ÃÊ ´ÜÀ§·Î)
+            // ê²½ê³¼ëœ ì‹œê°„ ê³„ì‚° (ì´ˆ ë‹¨ìœ„ë¡œ)
             int seconds = static_cast<int>(elapsedTime.asSeconds());
             int minutes = seconds / 60;
             seconds = seconds % 60;
 
-            // 00:00 Çü½ÄÀ¸·Î ½Ã°£ ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+            // 00:00 í˜•ì‹ìœ¼ë¡œ ì‹œê°„ í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
             stringstream ss;
             ss << setw(2) << setfill('0') << minutes << ":" << setw(2) << setfill('0') << seconds;
             timerText.setString(ss.str());
 
-            // È­¸é ±×¸®±â
+            // í™”ë©´ ê·¸ë¦¬ê¸°
             gameWindow.clear(Color::White);
-            gameWindow.draw(sprite);  // È¸ÀüÇÏ´Â ÀÌ¹ÌÁö ±×¸®±â
-            gameWindow.draw(statusText);  // ¿¬°á »óÅÂ ¸Ş½ÃÁö ±×¸®±â
-            gameWindow.draw(timerText);   // ½Ã°£ ÅØ½ºÆ® ±×¸®±â
+            gameWindow.draw(sprite);  // íšŒì „í•˜ëŠ” ì´ë¯¸ì§€ ê·¸ë¦¬ê¸°
+            gameWindow.draw(statusText);  // ì—°ê²° ìƒíƒœ ë©”ì‹œì§€ ê·¸ë¦¬ê¸°
+            gameWindow.draw(timerText);   // ì‹œê°„ í…ìŠ¤íŠ¸ ê·¸ë¦¬ê¸°
             gameWindow.display();
 
         }
@@ -209,162 +279,174 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
 }
 
 
+//void GameManager::updatePlayerPosition(int playerID, float x, float y, float distance) {
+//    sf::Packet packet;
+//    packet << "MOVE" << playerID << x << y << distance;  // ì´ë™ ì •ë³´ íŒ¨í‚· ìƒì„±
+//
+//    if (serverSocket.send(packet) != sf::Socket::Status::Done) {
+//        std::cerr << "ì„œë²„ì— ìœ„ì¹˜ ë°ì´í„° ì „ì†¡ ì‹¤íŒ¨!" << std::endl;
+//    }
+//}
+// í°íŠ¸ NanumGothic //
 
-// ÆùÆ® NanumGothic //
-
-// °ÔÀÓ ½ÃÀÛ
+// ê²Œì„ ì‹œì‘
 void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
 
 
-    std::cout << "°ÔÀÓ ½ÃÀÛÃ¢ ÀÌµ¿ ¿Ï·á!!" << std::endl;
+    std::cout << "ê²Œì„ ì‹œì‘ì°½ ì´ë™ ì™„ë£Œ!!" << std::endl;
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 
-    Texture ladderImg;
+    Texture ladderImg, bgTexture;
+   
 
-    // ÀÌ¹ÌÁö ·Îµå
-    if (!ladderImg.loadFromFile("./assets/image/ladder3.png")) {
-        cerr << "»ç´Ù¸® ÀÌ¹ÌÁö ·Îµå ½ÇÆĞ!" << endl;
+    if (!bgTexture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/bgimg_game.png")) {
+        cerr << "ê²Œì„ ë°°ê²½ ì´ë¯¸ì§€ ë¡œë“œ ì‹¤íŒ¨!" << endl;
+        //return -1; // ì´ë¯¸ì§€ ë¡œë“œ ì‹¤íŒ¨ ì‹œ ì¢…ë£Œ
+    }
+    Sprite bgSprite(bgTexture);
+    bgSprite.setTexture(bgTexture);
+    bgSprite.setPosition(Vector2f(0.f, 0.f));
+
+    // ì´ë¯¸ì§€ ë¡œë“œ
+    if (!ladderImg.loadFromFile("C:/Project/gameProject/typingGame/assets/image/bgimg_ladder.png")) {
+        cerr << "ì‚¬ë‹¤ë¦¬ ì´ë¯¸ì§€ ë¡œë“œ ì‹¤íŒ¨!" << endl;
         //return;
     }
 
-    // ÇÃ·¹ÀÌ¾î ÀÌ¹ÌÁö ·Îµå
+    // í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë¡œë“œ
     Texture player1Texture, player2Texture;
-    if (!player1Texture.loadFromFile("./assets/image/player1_1.png") || !player1Texture.loadFromFile("./assets/image/player1_2.png")) {
-        cout << "ÇÃ·¹ÀÌ¾î ÀÌ¹ÌÁö ·Îµå ½ÇÆĞ!" << endl;
+    if (!player1Texture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/player1_1.png") || !player1Texture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/player1_2.png")) {
+        cout << "í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë¡œë“œ ì‹¤íŒ¨!" << endl;
         //return -1;
     }
-    if (!player2Texture.loadFromFile("./assets/image/player2_1.png") || !player2Texture.loadFromFile("./assets/image/player2_2.png")) {
-        cout << "ÇÃ·¹ÀÌ¾î ÀÌ¹ÌÁö ·Îµå ½ÇÆĞ!" << endl;
+    if (!player2Texture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/player2_1.png") || !player2Texture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/player2_2.png")) {
+        cout << "í”Œë ˆì´ì–´ ì´ë¯¸ì§€ ë¡œë“œ ì‹¤íŒ¨!" << endl;
         //return -1;
     }
 
-    // ÃÊ±â À§Ä¡ ¼³Á¤
-    // ÇÃ·¹ÀÌ¾î1 ¾Ö´Ï¸ŞÀÌ¼Ç ½ºÇÁ¶óÀÌÆ® ·Îµå
+    // ì´ˆê¸° ìœ„ì¹˜ ì„¤ì •
+    // í”Œë ˆì´ì–´1 ì• ë‹ˆë©”ì´ì…˜ ìŠ¤í”„ë¼ì´íŠ¸ ë¡œë“œ
     std::vector<Texture> player1Textures(3);
-    player1Textures[0].loadFromFile("./assets/image/player1_1.png");
-    player1Textures[1].loadFromFile("./assets/image/player1_2.png");
+    player1Textures[0].loadFromFile("C:/Project/gameProject/typingGame/assets/image/player1_1.png");
+    player1Textures[1].loadFromFile("C:/Project/gameProject/typingGame/assets/image/player1_2.png");
     // player1Textures[2].loadFromFile("player1_3.png");
     Sprite player1Sprite(player1Textures[0]);
-    player1Sprite.setPosition(Vector2f(20.f, 10.f));
+    player1Sprite.setPosition(Vector2f(20.f, 0.f));
     int player1Frame = 0;
 
-    // ÇÃ·¹ÀÌ¾î2 ¾Ö´Ï¸ŞÀÌ¼Ç ½ºÇÁ¶óÀÌÆ® ·Îµå
+    // í”Œë ˆì´ì–´2 ì• ë‹ˆë©”ì´ì…˜ ìŠ¤í”„ë¼ì´íŠ¸ ë¡œë“œ
     std::vector<Texture> player2Textures(3);
-    player2Textures[0].loadFromFile("./assets/image/player2_1.png");
-    player2Textures[1].loadFromFile("./assets/image/player2_2.png");
+    player2Textures[0].loadFromFile("C:/Project/gameProject/typingGame/assets/image/player2_1.png");
+    player2Textures[1].loadFromFile("C:/Project/gameProject/typingGame/assets/image/player2_2.png");
     //player2Textures[2].loadFromFile("player1_3.png");
     Sprite player2Sprite(player2Textures[0]);
-    player2Sprite.setPosition(Vector2f(20.f, 60.f));
+    player2Sprite.setPosition(Vector2f(20.f, 45.f));
     int player2Frame = 0;
 
-    //float moveDistance = 20.f; // ÇÑ ¹®Àå ÀÔ·Â ½Ã ÀÌµ¿ °Å¸®
+    //float moveDistance = 20.f; // í•œ ë¬¸ì¥ ì…ë ¥ ì‹œ ì´ë™ ê±°ë¦¬
 
 
-
-
-
-
-
-
-
-    sf::Sprite sprite(ladderImg);
-
-    // »ç´Ù¸® 1 ÀÌ¹ÌÁö ¼³Á¤
+    sf::Sprite spriteLadder(ladderImg);
+    // ì‚¬ë‹¤ë¦¬ ë°°ê²½ ì„¤ì •
+    spriteLadder.setTexture(ladderImg);
+    spriteLadder.setPosition(Vector2f(0.f, 0.f));
+    /*
+    // ì‚¬ë‹¤ë¦¬ 1 ì´ë¯¸ì§€ ì„¤ì •
     Sprite ladderImgSpriteLeft(ladderImg);
     //Vector2u ladderImgSize = ladderImg.getSize();
-    //// ¿øÇÏ´Â Å©±â·Î Á¶Á¤ (¿¹: 200x200)
+    //// ì›í•˜ëŠ” í¬ê¸°ë¡œ ì¡°ì • (ì˜ˆ: 200x200)
     //float scaleX = 30.f / ladderImgSize.x;
     //float scaleY = 50.f / ladderImgSize.y;
     ladderImgSpriteLeft.setTexture(ladderImg);
-    ladderImgSpriteLeft.setPosition(Vector2f(100.f, 150.f));     // ¿ŞÂÊ
+    ladderImgSpriteLeft.setPosition(Vector2f(100.f, 150.f));     // ì™¼ìª½
 
-    // »ç´Ù¸® 2 ÀÌ¹ÌÁö ¼³Á¤
+    // ì‚¬ë‹¤ë¦¬ 2 ì´ë¯¸ì§€ ì„¤ì •
     Sprite ladderImgSpriteRight(ladderImg);
     //Vector2u ladderImgSize = ladderImg.getSize();
-    //// ¿øÇÏ´Â Å©±â·Î Á¶Á¤ (¿¹: 200x200)
+    //// ì›í•˜ëŠ” í¬ê¸°ë¡œ ì¡°ì • (ì˜ˆ: 200x200)
     //float scaleX = 30.f / ladderImgSize.x;
     //float scaleY = 50.f / ladderImgSize.y;
     ladderImgSpriteRight.setTexture(ladderImg);
-    ladderImgSpriteRight.setPosition(Vector2f(1080.f, 150.f));     // ¿À¸¥ÂÊ 
-
-    sf::Text gameText(font, L"°ÔÀÓ ½ÃÀÛ~~!", 60);
+    ladderImgSpriteRight.setPosition(Vector2f(1080.f, 150.f));     // ì˜¤ë¥¸ìª½ 
+    */
+    sf::Text gameText(font, L"ê²Œì„ ì‹œì‘~~!", 60);
 
     gameText.setFillColor(Color::Red);
-    gameText.setPosition(Vector2f(480.f, 50.f)); // (¿ŞÂÊ -> ¿À¸¥ÂÊ, À§ -> ¾Æ·¡)
+    gameText.setPosition(Vector2f(480.f, 50.f)); // (ì™¼ìª½ -> ì˜¤ë¥¸ìª½, ìœ„ -> ì•„ë˜)
 
-    //------------------------------------Å¸ÀÚ ÀÔ·ÂÃ¢ ¸¸µé±â------------------------------------
-    // Å¸ÀÚ ¿¬½À ¹®Àå ¸®½ºÆ®
-    vector<wstring> sentences = { L"Hello", L"Welcome", L"World", L"AB", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"Bye"};
+    //------------------------------------íƒ€ì ì…ë ¥ì°½ ë§Œë“¤ê¸°------------------------------------
+    // íƒ€ì ì—°ìŠµ ë¬¸ì¥ ë¦¬ìŠ¤íŠ¸
+    vector<wstring> sentences = { L"A", L"A", L"A",L"A", L"A", L"A",L"A", L"A", L"A", L"A",L"A", L"A", L"A", L"A",  L"A", L"A",L"A", L"A", L"A", L"A", L"A", L"A", L"A",L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"Z"};
     size_t currentSentenceIndex = 0;
     wstring userInput;
 
-    // ÇöÀç ¹®Àå Ç¥½Ã
+    // í˜„ì¬ ë¬¸ì¥ í‘œì‹œ
     Text currentSentence(font, sentences[currentSentenceIndex], 50);
     FloatRect textBounds = currentSentence.getGlobalBounds();
     currentSentence.setOrigin(textBounds.getCenter());
     currentSentence.setFillColor(Color::Black);
-    currentSentence.setPosition(Vector2f(1280.f / 2, 300.f)); // °¡¿îµ¥ Á¤·Ä
+    currentSentence.setPosition(Vector2f(1280.f / 2, 300.f)); // ê°€ìš´ë° ì •ë ¬
 
-    // ÀÔ·ÂÃ¢ ¹è°æ »ı¼º
-    sf::RectangleShape inputBackground(sf::Vector2f(500.f, 40.f)); // ÀÔ·ÂÃ¢ Å©±â
+    // ì…ë ¥ì°½ ë°°ê²½ ìƒì„±
+    sf::RectangleShape inputBackground(sf::Vector2f(500.f, 40.f)); // ì…ë ¥ì°½ í¬ê¸°
     FloatRect inputTextBounds = inputBackground.getGlobalBounds();
     inputBackground.setOrigin(inputTextBounds.getCenter());
 
     inputBackground.setPosition({ 1280.f / 2, 500.f });
-    inputBackground.setFillColor(sf::Color(240, 240, 240)); // ¹àÀº È¸»ö ¹è°æ
+    inputBackground.setFillColor(sf::Color(240, 240, 240)); // ë°ì€ íšŒìƒ‰ ë°°ê²½
     inputBackground.setOutlineThickness(2.f);
-    inputBackground.setOutlineColor(sf::Color(100, 100, 100)); // Å×µÎ¸® »ö»ó
+    inputBackground.setOutlineColor(sf::Color(100, 100, 100)); // í…Œë‘ë¦¬ ìƒ‰ìƒ
 
-    // ´ÙÀ½ ¹®Àå Ç¥½Ã
+    // ë‹¤ìŒ ë¬¸ì¥ í‘œì‹œ
     Text nextSentence(font, L"", 20);
     if (currentSentenceIndex + 1 < sentences.size()) {
         nextSentence.setString(sentences[currentSentenceIndex + 1]);
     }
     FloatRect nextTextBounds = nextSentence.getGlobalBounds();
     nextSentence.setOrigin(nextTextBounds.getCenter());
-    nextSentence.setFillColor(Color(32, 32, 32)); // °ËÀº»ö¿¡ °¡±î¿î È¸»ö
-    nextSentence.setPosition(Vector2f(1280.f / 2, 400.f)); // °¡¿îµ¥
+    nextSentence.setFillColor(Color(32, 32, 32)); // ê²€ì€ìƒ‰ì— ê°€ê¹Œìš´ íšŒìƒ‰
+    nextSentence.setPosition(Vector2f(1280.f / 2, 400.f)); // ê°€ìš´ë°
 
-    // ºÒÅõ¸í ¹è°æ ¼³Á¤
+    // ë¶ˆíˆ¬ëª… ë°°ê²½ ì„¤ì •
     sf::RectangleShape Background(sf::Vector2f(400.f, 70.f));
-    // ¹è°æ Å©±â °¡Á®¿À±â
+    // ë°°ê²½ í¬ê¸° ê°€ì ¸ì˜¤ê¸°
     FloatRect bgBounds = Background.getGlobalBounds();
-    Background.setOrigin(bgBounds.getCenter()); // Áß¾Ó ±âÁØ Á¤·Ä
+    Background.setOrigin(bgBounds.getCenter()); // ì¤‘ì•™ ê¸°ì¤€ ì •ë ¬
 
-    Background.setFillColor(sf::Color(224, 224, 224, 200)); // ¸¶Áö¸· - Åõ¸íµµ
+    Background.setFillColor(sf::Color(224, 224, 224, 200)); // ë§ˆì§€ë§‰ - íˆ¬ëª…ë„
     Background.setPosition(Vector2f(1280.f / 2, 400.f));
     //Background.setOutlineThickness(1.f);
-    //Background.setOutlineColor(sf::Color(139, 0, 0)); // Å×µÎ¸® »ö»ó
+    //Background.setOutlineColor(sf::Color(139, 0, 0)); // í…Œë‘ë¦¬ ìƒ‰ìƒ
 
-    // ÀÔ·Â Ç¥½Ã
+    // ì…ë ¥ í‘œì‹œ
     Text userInputText(font, L"", 30);
     userInputText.setFillColor(Color::Green);
-    userInputText.setPosition(Vector2f(400.f, 485.f)); // È­¸é Á¤Áß¾Ó
+    userInputText.setPosition(Vector2f(400.f, 485.f)); // í™”ë©´ ì •ì¤‘ì•™
 
     //--------------------------------------------------------------------------------------------
 
-    // userID ¹Ş¾Æ¿Í¼­ Ãâ·Â (
-    wstring user1ID = L"»ç¿ëÀÚ 1"; // id ¹Ş¾Æ¿Í¼­ ³Ö±â
-    wstring user2ID = L"»ç¿ëÀÚ 2"; // id ¹Ş¾Æ¿Í¼­ ³Ö±â
+    // userID ë°›ì•„ì™€ì„œ ì¶œë ¥ (
+    wstring user1ID = L"ì‚¬ìš©ì 1"; // id ë°›ì•„ì™€ì„œ ë„£ê¸°
+    wstring user2ID = L"ì‚¬ìš©ì 2"; // id ë°›ì•„ì™€ì„œ ë„£ê¸°
 
     Text user1Text(font, user1ID, 20);
     Text user2Text(font, user2ID, 20); 
     user1Text.setFillColor(Color::Black);
     user2Text.setFillColor(Color::Black);
 
-
-    user1Text.setPosition(Vector2f(600.f, 500.f)); // (¿ŞÂÊ -> ¿À¸¥ÂÊ, À§ -> ¾Æ·¡)
-    user2Text.setPosition(Vector2f(600.f, 100.f)); // (¿ŞÂÊ -> ¿À¸¥ÂÊ, À§ -> ¾Æ·¡)
-
+    user1Text.setPosition(Vector2f(600.f, 500.f)); // (ì™¼ìª½ -> ì˜¤ë¥¸ìª½, ìœ„ -> ì•„ë˜)
+    user2Text.setPosition(Vector2f(600.f, 100.f)); // (ì™¼ìª½ -> ì˜¤ë¥¸ìª½, ìœ„ -> ì•„ë˜)
 
     window.clear(Color::White);
+    window.draw(bgSprite);
+    window.draw(spriteLadder);              // ì‚¬ë‹¤ë¦¬ bg
     window.draw(player1Sprite);             // player1
     window.draw(player2Sprite);             // player2
     window.draw(Background);
     window.draw(gameText);
     window.draw(userInputText);
-    window.draw(ladderImgSpriteLeft);       // ¿ŞÂÊ
-    window.draw(ladderImgSpriteRight);      // ¿À¸¥ÂÊ
+    //window.draw(ladderImgSpriteLeft);       // ì™¼ìª½
+    //window.draw(ladderImgSpriteRight);      // ì˜¤ë¥¸ìª½
     window.draw(currentSentence);
     window.draw(nextSentence);
     //window.draw(user1Text);
@@ -372,7 +454,7 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
     window.draw(inputBackground);
     window.display();
 
-    // Ä¿¼­ ¼³Á¤ Ãß°¡
+    // ì»¤ì„œ ì„¤ì • ì¶”ê°€
     sf::Clock cursorClock;
     bool showCursor = true;
     sf::RectangleShape cursor(sf::Vector2f(2.f, 30.f));
@@ -380,68 +462,175 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
     cursor.setPosition({ 400.f, 485.f });
 
 
+    // ì´ë™ ë°©í–¥ ì •ì˜ (0: ì˜¤ë¥¸ìª½, 1: ì•„ë˜ìª½, 2: ì™¼ìª½, 3: ìœ„ìª½)
+    int player1Direction = 0;
+    int player2Direction = 0;
+    float player1MoveDist = 0;
+    float player2MoveDist = 0;
+    client.addPlayer(1, &player1Sprite);
+    client.addPlayer(2, &player2Sprite);
+    // ì”ìƒ íš¨ê³¼ë¥¼ ìœ„í•œ ë°˜íˆ¬ëª… ë ˆì´ì–´
+    sf::RectangleShape fadeEffect(sf::Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT));
+    fadeEffect.setFillColor(sf::Color(255, 255, 255, 50));  // ë°˜íˆ¬ëª…í•œ í°ìƒ‰
+
+
     while (window.isOpen()) {
         bool isWindowClosed = false;
 
-        while (std::optional event = window.pollEvent()){
-            if (event->is<sf::Event::Closed>()){
+        while (std::optional event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
                 isWindowClosed = true;
                 break;
             }
-            else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
+            else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
                     isWindowClosed = true;
                     break;
                 }
-            }
-            // ÅØ½ºÆ® ÀÔ·Â Ã³¸®
+            }   
+  
+            // í…ìŠ¤íŠ¸ ì…ë ¥ ì²˜ë¦¬
             else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
-                if (textEntered->unicode == 8) { // ¹é½ºÆäÀÌ½º Ã³¸®
+                if (textEntered->unicode == 8) { // ë°±ìŠ¤í˜ì´ìŠ¤ ì²˜ë¦¬
                     if (!userInput.empty()) {
                         userInput.pop_back();
                     }
                 }
-                else if (textEntered->unicode == 13) { // ¿£ÅÍ ÀÔ·Â ½Ã °ËÁõ
+                else if (textEntered->unicode == 13) { // ì—”í„° ì…ë ¥ ì‹œ ì´ë™ ë° ì• ë‹ˆë©”ì´ì…˜A
                     if (userInput == sentences[currentSentenceIndex]) {
                         currentSentenceIndex++;
                         int check = 0;
                         if (currentSentenceIndex < sentences.size()) {
-                           for (int i = 0; i < 5; i++) {
-                               player1Sprite.setColor(sf::Color(255, 255, 255, 255)); // 
-
-                               window.draw(player1Sprite);
-                             
-                                player1Sprite.setTexture(player1Textures[i%2]);
-                                player1Sprite.move(Vector2f(20.f, 0.f));  // ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿
-                                if (i == 2) {
-                                    if(check % 2 == 1){
-                                    player1Textures[1].loadFromFile("./assets/image/player1_1.png");
-                                    player1Textures[0].loadFromFile("./assets/image/player1_2.png");
-                                    }
-                                    else {
-                                        player1Textures[0].loadFromFile("./assets/image/player1_1.png");
-                                        player1Textures[1].loadFromFile("./assets/image/player1_2.png");
-                                    }
+                            for (int i = 0; i < 6; i++) {
+                                player1Sprite.setColor(sf::Color(255, 255, 255, 255));
+                                // Player1 ê°€ë¡œ ì´ë™ê±°ë¦¬: 1240px, ì„¸ë¡œ ì´ë™ê±°ë¦¬: 680px > (1240+680) * 2 = 3840px
+                                // Player2 ê°€ë¡œ ì´ë™ê±°ë¦¬: 1150px, ì„¸ë¡œ ì´ë™ê±°ë¦¬: 590px > (1150+590) * 2 = 3480px
+                                // ë¬¸ì¥ ìˆ˜ì— ë”°ë¼ ì´ë™ì†ë„ ê²°ì •í•˜ë„ë¡ ìˆ˜ì • í•„ìš”, player2 ì´ë™ì†ë„ = player1 ì´ë™ì†ë„ / 1.1034
+                                //  1. ë°©í–¥ì— ë”°ë¼ ë¨¼ì € ì´ë™
+                                switch (player1Direction) {
+                                case 0:  // ì˜¤ë¥¸ìª½ ì´ë™
+                                    player1Sprite.move(Vector2f(25.f, 0.f));    // x, y ë³€ìˆ˜ ë§Œë“¤ê¸° // ì—”í„° ì³ì§€ë©´ ì„œë²„ì— Direction ë©”ì„¸ì§€ ë³´ë‚´ê¸°
+                                    break;                                      // ì„œë²„ì—ì„œ Direction ë°›ì•„ì„œ ì²˜ë¦¬
+                                case 1:  // ì•„ë˜ìª½ ì´ë™                         // í´ë¼1 í•¨ìˆ˜, í´ë¼2 í•¨ìˆ˜ ì‘ì„±
+                                    player1Sprite.move(Vector2f(0.f, 25.f));
+                                    break;
+                                case 2:  // ì™¼ìª½ ì´ë™
+                                    player1Sprite.move(Vector2f(-25.f, 0.f));
+                                    break;
+                                case 3:  // ìœ„ìª½ ì´ë™
+                                    player1Sprite.move(Vector2f(0.f, -25.f));
+                                    break;
                                 }
-                             
-                                //window.clear(Color::White); 
-                                //player1Sprite.setColor(sf::Color(255, 255, 255, 0)); // ¿ÏÀü Åõ¸í
-                                player1Sprite.setColor(sf::Color(255, 255, 255, 255)); // 
+                                
 
+                                //  2. ì´ë™ í›„ ìœ„ì¹˜ í™•ì¸í•˜ì—¬ íšŒì „ ì ìš©
+                                if (player1Sprite.getPosition().x >= SCREEN_WIDTH - 5 && player1Direction == 0) {
+                                    player1Direction = 1;  // ì•„ë˜ë¡œ ì´ë™
+                                    player1Sprite.rotate(degrees(90.f));  // 90ë„ íšŒì „
+                                }
+                                else if (player1Sprite.getPosition().y >= SCREEN_HEIGHT - 5 && player1Direction == 1) {
+                                    player1Direction = 2;  // ì™¼ìª½ ì´ë™
+                                    player1Sprite.rotate(degrees(90.f));;  // 180ë„ íšŒì „
+                                }
+                                else if (player1Sprite.getPosition().x - 5 <= 0 && player1Direction == 2) {
+                                    player1Direction = 3;  // ìœ„ë¡œ ì´ë™
+                                    player1Sprite.rotate(degrees(90.f));;  // 270ë„ íšŒì „
+                                }
+                                else if (player1Sprite.getPosition().y - 5 <= 0 && player1Direction == 3) {
+                                    player1Direction = 0;  // ì˜¤ë¥¸ìª½ ì´ë™
+                                    player1Sprite.rotate(degrees(90.f));;  // 0ë„ íšŒì „
+                                }
+                                // í˜„ì¬ ìœ„ì¹˜ ê°€ì ¸ì˜¤ê¸°
+                            
+                                
+                                //// ì„œë²„ì— MOVE ë©”ì‹œì§€ ì „ì†¡
+                                //sf::Packet packet;
+                                //packet << "MOVE" << x << y;
+                                //if (ServerManager::litener.send(packet) != sf::Socket::Status::Done) {
+                                //    std::cerr << "ì„œë²„ì— ìœ„ì¹˜ ë°ì´í„° ì „ì†¡ ì‹¤íŒ¨!" << std::endl;
+                                //}
+                                
+                                // player2ëŠ” player1ë³´ë‹¤ ì´ë™ì†ë„ê°€ 'n/1.1034' ëŠë¦¬ê²Œ ì´ë™í•´ì•¼í•¨(ì´ë™ê±°ë¦¬ ë³´ì •)
+                                //  1. ë°©í–¥ì— ë”°ë¼ ë¨¼ì € ì´ë™
+                                switch (player2Direction) {
+                                case 0:  // ì˜¤ë¥¸ìª½ ì´ë™
+                                    player2Sprite.move(Vector2f(22.66f, 0.f));
+                                    break;
+                                case 1:  // ì•„ë˜ìª½ ì´ë™
+                                    player2Sprite.move(Vector2f(0.f, 22.66f));
+                                    break;
+                                case 2:  // ì™¼ìª½ ì´ë™
+                                    player2Sprite.move(Vector2f(-22.66f, 0.f));
+                                    break;
+                                case 3:  // ìœ„ìª½ ì´ë™
+                                    player2Sprite.move(Vector2f(0.f, -22.66f));
+                                    break;
+                                }
+
+                                //  2. ì´ë™ í›„ ìœ„ì¹˜ í™•ì¸í•˜ì—¬ íšŒì „ ì ìš©
+                                if (player2Sprite.getPosition().x >= SCREEN_WIDTH - 50 && player2Direction == 0) {
+                                    player2Direction = 1;  // ì•„ë˜ë¡œ ì´ë™
+                                    player2Sprite.rotate(degrees(90.f));  // 90ë„ íšŒì „
+                                }
+                                else if (player2Sprite.getPosition().y >= SCREEN_HEIGHT - 50 && player2Direction == 1) {
+                                    player2Direction = 2;  // ì™¼ìª½ ì´ë™
+                                    player2Sprite.rotate(degrees(90.f));;  // 180ë„ íšŒì „
+                                }
+                                else if (player2Sprite.getPosition().x - 50 <= 0 && player2Direction == 2) {
+                                    player2Direction = 3;  // ìœ„ë¡œ ì´ë™
+                                    player2Sprite.rotate(degrees(90.f));;  // 270ë„ íšŒì „
+                                }
+                                else if (player2Sprite.getPosition().y - 50 <= 0 && player2Direction == 3) {
+                                    player2Direction = 0;  // ì˜¤ë¥¸ìª½ ì´ë™
+                                    player2Sprite.rotate(degrees(90.f));;  // 0ë„ íšŒì „
+                                }
+
+                                //client.receiveMoves();
+                                //-----ì¶”ê°€
+                                // ì„œë²„ ë©”ì‹œì§€ ìˆ˜ì‹  ìŠ¤ë ˆë“œ ì‹¤í–‰
+                                //client.startReceiveThread();
+                                 
+                                //cout << "startReceiveThread() ì‹¤í–‰" << endl;
+                                //while (true) {
+                                
+                                //std::cout << "ì´ë™ ì¢Œí‘œ (x, y): " << x << ", " << y << endl;
+                                
+                                //network.receiveMoves();
+                                //cout << "receiveMoves() ì‹¤í–‰" << endl;
+                               // }
+                                //------
+                                player1MoveDist += 25.0f;
+                                player2MoveDist += 22.66f;
+                                if (player1MoveDist >= 3840.f) {
+                                    cout << "player1 ìŠ¹ë¦¬" << endl;
+                                }
+                                if (player2MoveDist >= 3480.f) {
+                                    cout << "player2 ìŠ¹ë¦¬" << endl;
+                                }
+                                
+                                
+                                window.draw(fadeEffect);
                                 window.draw(player1Sprite);
                                 window.draw(player2Sprite);
-                                //window.draw(inputText);
                                 window.display();
-                                sf::sleep(sf::milliseconds(100));  // ¾Ö´Ï¸ŞÀÌ¼Ç ¼Óµµ Á¶Àı
-                           }
-                           check++;
+                                sf::sleep(sf::milliseconds(100));
+                            }
+                            float x = player1Sprite.getPosition().x;
+                            float y = player1Sprite.getPosition().y;
+                            client.receiveMoves();
+                            std::cout << "ì•„ì´ë”” : " << game.getClientID() << ", x: " << x << ", y: " << y << std::endl;
+                            client.sendMove(NetworkManager::getInstance().getSocket(), game.getClientID(), x, y);  // ì´ë†ˆì—ì„œ ëŠê²¼ë‹¤ê°€
+                            //client.startReceiveThread();
+                            /*game.playerMove(x, y);*/
+                            check++;
 
                             userInput.clear();
                             currentSentence.setString(sentences[currentSentenceIndex]);
                             nextSentence.setString((currentSentenceIndex + 1 < sentences.size()) ? sentences[currentSentenceIndex + 1] : L"");
                         }
                         else {
-                            gameText.setString(L"°ÔÀÓ Á¾·á!");
+                            gameText.setString(L"ê²Œì„ ì¢…ë£Œ!");
+                            //client.stopReceiveThread();
                             currentSentence.setString(L"");
                             nextSentence.setString(L"");
                         }
@@ -449,64 +638,42 @@ void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
                 }
                 else {
                     userInput += static_cast<wchar_t>(textEntered->unicode);
-                    std::wcout << L"ÀÔ·ÂµÈ ¹®ÀÚ: " << static_cast<wchar_t>(textEntered->unicode) << std::endl;
-               
                 }
-                // UTF-8·Î º¯È¯ÇÏ¿© SFML Text¿¡ ¼³Á¤
                 userInputText.setString(converter.to_bytes(userInput));
-                //userInputText.setString(userInput);
             }
+            
         }
 
         if (isWindowClosed) {
-            break;  // Ã¢ÀÌ ´İÈ÷¸é ¹İº¹¹®À» Á¾·áÇÏ¿© °ÔÀÓÀ» ÁøÇà
+            break;
         }
 
-        // Ä¿¼­ ±ô¹ÚÀÓ ¾÷µ¥ÀÌÆ®
+        // ì»¤ì„œ ê¹œë°•ì„ ì—…ë°ì´íŠ¸
         if (cursorClock.getElapsedTime().asMilliseconds() > 500) {
             showCursor = !showCursor;
             cursorClock.restart();
         }
-
-        //sf::Vector2u textureSize = texture.getSize();
-        //float scaledWidth = textureSize.x * 0.2f;
-        //float scaledHeight = textureSize.y * 0.2f;
-        //sprite.setPosition({
-        //    window.getSize().x - scaledWidth - 20.f,
-        //    window.getSize().y - scaledHeight - 20.f
-        //    });
-
-        //// Ä¿¼­ À§Ä¡ ¾÷µ¥ÀÌÆ®
-        //float textWidth = userInputText.getLocalBounds().width;
-        //cursor.setPosition({ 300.f + textWidth, 350.f });
-
-
-        if (isWindowClosed) {
-            break;  // Ã¢ÀÌ ´İÈ÷¸é ¹İº¹¹®À» Á¾·áÇÏ¿© °ÔÀÓÀ» ÁøÇà
-        }
-
-
-        window.clear(Color::White);
-        window.draw(player1Sprite);             // player1
-        window.draw(player2Sprite);             // player2
+        // ì„œë²„ì—ì„œ ë©”ì‹œì§€ ìˆ˜ì‹ 
+        //receiveMoves();
+        //window.clear(Color::White);
+        window.draw(spriteLadder);
+        window.draw(fadeEffect);  // ì”ìƒ íš¨ê³¼ ì¶”ê°€
+        window.draw(player1Sprite);
+        window.draw(player2Sprite);
         window.draw(Background);
         window.draw(gameText);
         window.draw(userInputText);
-        window.draw(ladderImgSpriteLeft);
-        window.draw(ladderImgSpriteRight);
+        /*window.draw(ladderImgSpriteLeft);
+        window.draw(ladderImgSpriteRight);*/
         window.draw(currentSentence);
         window.draw(nextSentence);
-        window.draw(inputBackground);  // ¸ÕÀú ¹è°æÀ» ±×¸²
-        window.draw(userInputText);    // ±× ´ÙÀ½ ÅØ½ºÆ®¸¦ ±×¸²
-        //window.draw(user1Text);
-        //window.draw(user2Text);
-
-        // Ä¿¼­ Ç¥½Ã ¿©ºÎ °áÁ¤
+        window.draw(inputBackground);
+        window.draw(userInputText);
+   
         if (showCursor) {
             window.draw(cursor);
         }
 
-        //window.draw(inputBackground);
         window.display();
     }
 

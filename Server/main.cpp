@@ -1,7 +1,10 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/Network.hpp>
+#pragma once
+
 #include "networkManager.h"
 #include "gameManager.h"
+#include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
+//#include "serverManager.h"
 #include <iostream>
 #include <locale>
 #include <thread>
@@ -18,8 +21,9 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(sf::Vector2u(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)), L"게임 메인 화면");
     sf::Font font;
    
-    NetworkManager client;
-    GameManager game;
+    NetworkManager& client = NetworkManager::getInstance();
+    //ServerManager server;
+    //GameManager game;
     
     Texture profileTexture, backGroundTexture, typingButtonTexture, matchButtonTexture, korButtonTexture;
 
@@ -30,25 +34,25 @@ int main() {
     }
 
     // 배경 이미지 로드
-    if (!backGroundTexture.loadFromFile("./assets/image/bgimg.png")) {
+    if (!backGroundTexture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/bgimg.png")) {
         cerr << "배경 이미지 로드 실패!" << endl;
         return -1;
     }
 
     // 이미지 로드
-    if (!typingButtonTexture.loadFromFile("./assets/image/button.png")) {
+    if (!typingButtonTexture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/button.png")) {
         cerr << "Typing 버튼 이미지 로드 실패!" << endl;
         return -1;
     }
-    if (!matchButtonTexture.loadFromFile("./assets/image/button.png")) {
+    if (!matchButtonTexture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/button.png")) {
         cerr << "Match 버튼 이미지 로드 실패!" << endl;
         return -1;
     }
-    if (!korButtonTexture.loadFromFile("./assets/image/button.png")) {
+    if (!korButtonTexture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/button.png")) {
         cerr << "koreng 버튼 이미지 로드 실패!" << endl;
         return -1;
     }
-    if (!profileTexture.loadFromFile("./assets/image/user.png")) {
+    if (!profileTexture.loadFromFile("C:/Project/gameProject/typingGame/assets/image/user.png")) {
         cerr << "프로필 이미지 로드 실패!" << endl;
         return -1;
     }
@@ -150,6 +154,13 @@ int main() {
     //button.setFillColor(Color::Blue);
 
     while (window.isOpen()) {
+        //std::cout << "으하하하하하" << std::endl;
+        /*if (NetworkManager::getInstance().getSocket().getRemoteAddress().has_value()) {
+            Packet dummy;
+            dummy << "dummy";
+            NetworkManager::getInstance().getSocket().send(dummy);
+            std::cout << "으하하하하하" << std::endl;
+        }*/
         // 새로운 방식의 이벤트 처리
         std::optional<Event> event;
         while (const std::optional event = window.pollEvent()) {
@@ -165,7 +176,17 @@ int main() {
                     if (!client.connectToServer()) {
                         return -1;
                     }
+                    ////-----추가
+                    //// 서버 메시지 수신 스레드 실행
+                    //client.startReceiveThread();
 
+                    //while (true) {
+                    //    float x, y;
+                    //    std::cout << "이동 좌표 입력 (x, y): ";
+                    //    std::cin >> x >> y;
+                    //    game.playerMove(x, y);
+                    //}
+                    ////------
                     // 로딩창 실행 별도 스레드
                     bool isMatching = false;
                     std::thread loadingThread([&]() {
@@ -184,6 +205,7 @@ int main() {
                         game.runGame(window, font);
                         //}
                     }
+                        
 
 
                 }

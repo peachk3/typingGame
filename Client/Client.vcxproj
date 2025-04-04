@@ -136,6 +136,9 @@
     <ClCompile Include="GameManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameManager_origin.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="networkManager.h" />
   </ItemGroup>
   <ItemGroup>
