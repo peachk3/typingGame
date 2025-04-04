@@ -4,7 +4,7 @@
 #include <SFML/Network.hpp>
 #include <SFML/Graphics.hpp>  // sf::RenderWindow와 sf::Font를 사용하기 위해 추가
 #include <string>
-#include "networkManager.h"
+//#include "networkManager.h"
 #include "gameManager.h"
 
 #include <SFML/Network.hpp>
