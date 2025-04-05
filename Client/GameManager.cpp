@@ -27,6 +27,8 @@ using namespace sf;
 using namespace std;
 namespace fs = filesystem;
 
+std::string folderPath = "./assets/file";
+
 GameManager game;
 TypingGame tpgame;
 const int GWINDOW_WIDTH = 300;
@@ -35,7 +37,7 @@ const float ROTATION_SPEED = 60.f;  // 회전 속도 (1초당 n도 회전)
 
 FileLoader loader;
 TextUtil util;
-//TypingGame typing;
+
 
 // 로딩창 설정
 void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bool& isMatching) {
@@ -249,9 +251,6 @@ void GameManager::handleTypingGameMode(FileLoader& loader, TextUtil& util, Typin
     system("pause");
 }
 
-std::string folderPath = "./assets/file";
-
-
 
 void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSize,
     std::vector<std::vector<std::wstring>>& sentences) {
@@ -295,10 +294,6 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
     gameText.setPosition(Vector2f(480.f, 50.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
 
     //------------------------------------타자 입력창 만들기------------------------------------
-    // 타자 연습 문장 리스트
-    //vector<wstring> sentences = { L"Hello", L"Welcome", L"World", L"AB", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"Bye" };
-    //size_t currentSentenceIndex = 0;
-    //wstring userInput;
 
     // 현재 문장 표시
     Text currentSentence(font, L"", 50);
@@ -306,18 +301,6 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
     currentSentence.setOrigin(textBounds.getCenter());
     currentSentence.setFillColor(Color::Black);
     currentSentence.setPosition(Vector2f(1280.f / 2, 300.f)); // 가운데 정렬
-
-
-    //// 불투명 배경 설정
-    //sf::RectangleShape Background(sf::Vector2f(400.f, 70.f));
-    //// 배경 크기 가져오기
-    //FloatRect bgBounds = Background.getGlobalBounds();
-    //Background.setOrigin(bgBounds.getCenter()); // 중앙 기준 정렬
-
-    //Background.setFillColor(sf::Color(224, 224, 224, 200)); // 마지막 - 투명도
-    //Background.setPosition(Vector2f(1280.f / 2, 400.f));
-    ////Background.setOutlineThickness(1.f);
-    ////Background.setOutlineColor(sf::Color(139, 0, 0)); // 테두리 색상
 
     // 입력 표시
     Text userInputText(font, L"", 30);
@@ -384,11 +367,6 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
                 Vector2f center2 = updatedBounds.getCenter();
                 userInputText.setOrigin(center2);
 
-
-
-
-                //cursor.setPosition({ 1280.f / 2 + updatedBounds.width / 2 + 5.f, 485.f });
-
             }
             // 엔터 입력
             // 한줄마다 정확도, 속도 나옴
@@ -440,8 +418,6 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
                         Vector2f center2 = updatedBounds.getCenter();
                         userInputText.setOrigin(center2);
 
-                        // 커서 위치도 초기화
-                        //cursor.setPosition({ 1280.f / 2, 485.f });
                     }
                     else
                     {
@@ -459,47 +435,12 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
             }
 
         }
-        //window.clear(sf::Color::White);
-
-        //                // 커서 설정 추가
-        //sf::Clock cursorClock;
-        //bool showCursor = true;
-        //sf::RectangleShape cursor(sf::Vector2f(2.f, 30.f));
-        //cursor.setFillColor(sf::Color::Black);
-        //cursor.setPosition({ 400.f, 485.f });
-
-        //// 커서 위치 업데이트 (텍스트 끝부분에 위치)
-        //cursor.setPosition({ center.x + center.y / 2 + 5.f, 485.f });
-        ////// 커서 위치 
-
-        // //커서 깜박임 업데이트
-        //if (cursorClock.getElapsedTime().asMilliseconds() > 500) {
-        //    showCursor = !showCursor;
-        //    cursorClock.restart();
-        //}
-
-        //window.display();
 
         if (isWindowClosed) {
             break;  // 창이 닫히면 반복문을 종료하여 게임을 진행
         }
 
-
-        //sf::Vector2u textureSize = currentInput.getSize();
-        //float scaledWidth = textureSize.x * 0.2f;
-        //float scaledHeight = textureSize.y * 0.2f;
-        //sprite.setPosition({
-        //    window.getSize().x - scaledWidth - 20.f,
-        //    window.getSize().y - scaledHeight - 20.f
-        //    });
-
-        //// 커서 위치 업데이트
-        //float textWidth = userInputText.getLocalBounds().size.x;
-        //cursor.setPosition({ 300.f + textWidth, 350.f });
-
-
         window.clear(Color::White);
-        //window.draw(Background);
         window.draw(gameText);
 
         // 현재 문장 표시 업데이트
@@ -509,335 +450,51 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
         Vector2f center3 = updatedTextBounds.getCenter();
         currentSentence.setOrigin(center3);
 
-
-        //window.draw(currentSentence);
-        //window.draw(inputBackground);  // 먼저 배경을 그림
-
         // 입력 텍스트 업데이트
         userInputText.setString(userInputs[currentSentenceIdx][currentLineIdx]);
-        //window.draw(userInputText);    // 그 다음 텍스트를 그림
-
-        //// 커서 표시 여부 결정
-        //if (showCursor) {
-        //    window.draw(cursor);
-        //}
 
         drawOriginTotalText(window, font, fontSize, sentences); // 전체 문장 출력
         drawOriginText(window, font, fontSize, sentences); // 문자 출력
         drawUserInputText(window, font, fontSize, userInputs, sentences); // 사용자 입력 출력
 
-        //window.draw(inputBackground);
         window.display();
     }
 
 }
-
-
-// 게임 시작
-//void GameManager::runGame(sf::RenderWindow& window, sf::Font& font) {
-//
-//    std::cout << "게임 시작창 이동 완료!!" << std::endl;
-//    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-//
-//    Texture ladderImg;
-//
-//    // 이미지 로드
-//    if (!ladderImg.loadFromFile("./assets/image/ladder3.png")) {
-//        cerr << "사다리 이미지 로드 실패!" << endl;
-//        //return;
-//    }
-//
-//    // 플레이어 이미지 로드
-//    Texture player1Texture, player2Texture;
-//    if (!player1Texture.loadFromFile("./assets/image/player1_1.png") || !player1Texture.loadFromFile("./assets/image/player1_2.png")) {
-//        cout << "플레이어 이미지 로드 실패!" << endl;
-//        //return -1;
-//    }
-//    if (!player2Texture.loadFromFile("./assets/image/player2_1.png") || !player2Texture.loadFromFile("./assets/image/player2_2.png")) {
-//        cout << "플레이어 이미지 로드 실패!" << endl;
-//        //return -1;
-//    }
-//
-//    // 초기 위치 설정
-//    // 플레이어1 애니메이션 스프라이트 로드
-//    std::vector<Texture> player1Textures(3);
-//    player1Textures[0].loadFromFile("./assets/image/player1_1.png");
-//    player1Textures[1].loadFromFile("./assets/image/player1_2.png");
-//    // player1Textures[2].loadFromFile("player1_3.png");
-//    Sprite player1Sprite(player1Textures[0]);
-//    player1Sprite.setPosition(Vector2f(20.f, 10.f));
-//    int player1Frame = 0;
-//
-//    // 플레이어2 애니메이션 스프라이트 로드
-//    std::vector<Texture> player2Textures(3);
-//    player2Textures[0].loadFromFile("./assets/image/player2_1.png");
-//    player2Textures[1].loadFromFile("./assets/image/player2_2.png");
-//    //player2Textures[2].loadFromFile("player1_3.png");
-//    Sprite player2Sprite(player2Textures[0]);
-//    player2Sprite.setPosition(Vector2f(20.f, 60.f));
-//    int player2Frame = 0;
-//
-//    //float moveDistance = 20.f; // 한 문장 입력 시 이동 거리
-//
-//
-//    sf::Sprite sprite(ladderImg);
-//
-//    // 사다리 1 이미지 설정
-//    Sprite ladderImgSpriteLeft(ladderImg);
-//    //Vector2u ladderImgSize = ladderImg.getSize();
-//    //// 원하는 크기로 조정 (예: 200x200)
-//    //float scaleX = 30.f / ladderImgSize.x;
-//    //float scaleY = 50.f / ladderImgSize.y;
-//    ladderImgSpriteLeft.setTexture(ladderImg);
-//    ladderImgSpriteLeft.setPosition(Vector2f(100.f, 150.f));     // 왼쪽
-//
-//    // 사다리 2 이미지 설정
-//    Sprite ladderImgSpriteRight(ladderImg);
-//    //Vector2u ladderImgSize = ladderImg.getSize();
-//    //// 원하는 크기로 조정 (예: 200x200)
-//    //float scaleX = 30.f / ladderImgSize.x;
-//    //float scaleY = 50.f / ladderImgSize.y;
-//    ladderImgSpriteRight.setTexture(ladderImg);
-//    ladderImgSpriteRight.setPosition(Vector2f(1080.f, 150.f));     // 오른쪽 
-//
-//    sf::Text gameText(font, L"게임 시작~~!", 60);
-//
-//    gameText.setFillColor(Color::Red);
-//    gameText.setPosition(Vector2f(480.f, 50.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
-//
-//    //------------------------------------타자 입력창 만들기------------------------------------
-//    // 타자 연습 문장 리스트
-//
-//    vector<wstring> sentences = { L"Hello", L"Welcome", L"World", L"AB", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"A", L"Bye" };
-//    size_t currentSentenceIndex = 0;
-//    wstring userInput;
-//
-//    // 현재 문장 표시
-//    Text currentSentence(font, sentences[currentSentenceIndex], 50);
-//    FloatRect textBounds = currentSentence.getGlobalBounds();
-//    currentSentence.setOrigin(textBounds.getCenter());
-//    currentSentence.setFillColor(Color::Black);
-//    currentSentence.setPosition(Vector2f(1280.f / 2, 300.f)); // 가운데 정렬
-//
-//    // 입력창 배경 생성
-//    sf::RectangleShape inputBackground(sf::Vector2f(500.f, 40.f)); // 입력창 크기
-//    FloatRect inputTextBounds = inputBackground.getGlobalBounds();
-//    inputBackground.setOrigin(inputTextBounds.getCenter());
-//
-//    inputBackground.setPosition({ 1280.f / 2, 500.f });
-//    inputBackground.setFillColor(sf::Color(240, 240, 240)); // 밝은 회색 배경
-//    inputBackground.setOutlineThickness(2.f);
-//    inputBackground.setOutlineColor(sf::Color(100, 100, 100)); // 테두리 색상
-//
-//    // 다음 문장 표시
-//    Text nextSentence(font, L"", 20);
-//    if (currentSentenceIndex + 1 < sentences.size()) {
-//        nextSentence.setString(sentences[currentSentenceIndex + 1]);
-//    }
-//    FloatRect nextTextBounds = nextSentence.getGlobalBounds();
-//    nextSentence.setOrigin(nextTextBounds.getCenter());
-//    nextSentence.setFillColor(Color(32, 32, 32)); // 검은색에 가까운 회색
-//    nextSentence.setPosition(Vector2f(1280.f / 2, 400.f)); // 가운데
-//
-//    // 불투명 배경 설정
-//    sf::RectangleShape Background(sf::Vector2f(400.f, 70.f));
-//    // 배경 크기 가져오기
-//    FloatRect bgBounds = Background.getGlobalBounds();
-//    Background.setOrigin(bgBounds.getCenter()); // 중앙 기준 정렬
-//
-//    Background.setFillColor(sf::Color(224, 224, 224, 200)); // 마지막 - 투명도
-//    Background.setPosition(Vector2f(1280.f / 2, 400.f));
-//    //Background.setOutlineThickness(1.f);
-//    //Background.setOutlineColor(sf::Color(139, 0, 0)); // 테두리 색상
-//
-//    // 입력 표시
-//    Text userInputText(font, L"", 30);
-//    userInputText.setFillColor(Color::Green);
-//    userInputText.setPosition(Vector2f(400.f, 485.f)); // 화면 정중앙
-//
-//    //--------------------------------------------------------------------------------------------
-//
-//    // userID 받아와서 출력 (
-//    wstring user1ID = L"사용자 1"; // id 받아와서 넣기
-//    wstring user2ID = L"사용자 2"; // id 받아와서 넣기
-//
-//    Text user1Text(font, user1ID, 20);
-//    Text user2Text(font, user2ID, 20);
-//    user1Text.setFillColor(Color::Black);
-//    user2Text.setFillColor(Color::Black);
-//
-//
-//    user1Text.setPosition(Vector2f(600.f, 500.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
-//    user2Text.setPosition(Vector2f(600.f, 100.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
-//
-//
-//    window.clear(Color::White);
-//    window.draw(player1Sprite);             // player1
-//    window.draw(player2Sprite);             // player2
-//    window.draw(Background);
-//    window.draw(gameText);
-//    window.draw(userInputText);
-//    window.draw(ladderImgSpriteLeft);       // 왼쪽
-//    window.draw(ladderImgSpriteRight);      // 오른쪽
-//    window.draw(currentSentence);
-//    window.draw(nextSentence);
-//    //window.draw(user1Text);
-//    //window.draw(user2Text);
-//    window.draw(inputBackground);
-//    window.display();
-//
-//    // 커서 설정 추가
-//    sf::Clock cursorClock;
-//    bool showCursor = true;
-//    sf::RectangleShape cursor(sf::Vector2f(2.f, 30.f));
-//    cursor.setFillColor(sf::Color::Black);
-//    cursor.setPosition({ 400.f, 485.f });
-//
-//
-//    while (window.isOpen()) {
-//        bool isWindowClosed = false;
-//
-//        while (std::optional event = window.pollEvent()) {
-//            if (event->is<sf::Event::Closed>()) {
-//                isWindowClosed = true;
-//                break;
-//            }
-//            else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-//                if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
-//                    isWindowClosed = true;
-//                    break;
-//                }
-//            }
-//            // 텍스트 입력 처리
-//            else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
-//                if (textEntered->unicode == 8) { // 백스페이스 처리
-//                    if (!userInput.empty()) {
-//                        userInput.pop_back();
-//                    }
-//                }
-//                else if (textEntered->unicode == 13) { // 엔터 입력 시 검증
-//                    if (userInput == sentences[currentSentenceIndex]) {
-//                        currentSentenceIndex++;
-//                        int check = 0;
-//                        if (currentSentenceIndex < sentences.size()) {
-//                            // 캐릭터 움직임
-//                            //for (int i = 0; i < 5; i++) {
-//                            //    player1Sprite.setColor(sf::Color(255, 255, 255, 255)); // 
-//
-//                            //    window.draw(player1Sprite);
-//
-//                            //    player1Sprite.setTexture(player1Textures[i % 2]);
-//                            //    player1Sprite.move(Vector2f(20.f, 0.f));  // 오른쪽으로 이동
-//                            //    if (i == 2) {
-//                            //        if (check % 2 == 1) {
-//                            //            player1Textures[1].loadFromFile("./assets/image/player1_1.png");
-//                            //            player1Textures[0].loadFromFile("./assets/image/player1_2.png");
-//                            //        }
-//                            //        else {
-//                            //            player1Textures[0].loadFromFile("./assets/image/player1_1.png");
-//                            //            player1Textures[1].loadFromFile("./assets/image/player1_2.png");
-//                            //        }
-//                            //    }
-//
-//                            //    //window.clear(Color::White); 
-//                            //    //player1Sprite.setColor(sf::Color(255, 255, 255, 0)); // 완전 투명
-//                            //    player1Sprite.setColor(sf::Color(255, 255, 255, 255)); // 
-//
-//                            //    window.draw(player1Sprite);
-//                            //    window.draw(player2Sprite);
-//                            //    //window.draw(inputText);
-//                            //    window.display();
-//                            //    sf::sleep(sf::milliseconds(100));  // 애니메이션 속도 조절
-//                            //}
-//                            check++;
-//
-//                            userInput.clear();
-//                            currentSentence.setString(sentences[currentSentenceIndex]);
-//                            nextSentence.setString((currentSentenceIndex + 1 < sentences.size()) ? sentences[currentSentenceIndex + 1] : L"");
-//                        }
-//                        else {
-//                            gameText.setString(L"게임 종료!");
-//                            currentSentence.setString(L"");
-//                            nextSentence.setString(L"");
-//                        }
-//                    }
-//                }
-//                else {
-//                    userInput += static_cast<wchar_t>(textEntered->unicode);
-//                    std::wcout << L"입력된 문자: " << static_cast<wchar_t>(textEntered->unicode) << std::endl;
-//
-//                }
-//                // UTF-8로 변환하여 SFML Text에 설정
-//                userInputText.setString(converter.to_bytes(userInput));
-//                //userInputText.setString(userInput);
-//            }
-//        }
-//
-//        if (isWindowClosed) {
-//            break;  // 창이 닫히면 반복문을 종료하여 게임을 진행
-//        }
-//
-//        // 커서 깜박임 업데이트
-//        if (cursorClock.getElapsedTime().asMilliseconds() > 500) {
-//            showCursor = !showCursor;
-//            cursorClock.restart();
-//        }
-//
-//        //sf::Vector2u textureSize = texture.getSize();
-//        //float scaledWidth = textureSize.x * 0.2f;
-//        //float scaledHeight = textureSize.y * 0.2f;
-//        //sprite.setPosition({
-//        //    window.getSize().x - scaledWidth - 20.f,
-//        //    window.getSize().y - scaledHeight - 20.f
-//        //    });
-//
-//        //// 커서 위치 업데이트
-//        //float textWidth = userInputText.getLocalBounds().width;
-//        //cursor.setPosition({ 300.f + textWidth, 350.f });
-//
-//
-//        if (isWindowClosed) {
-//            break;  // 창이 닫히면 반복문을 종료하여 게임을 진행
-//        }
-//
-//
-//        window.clear(Color::White);
-//        // 플레이어 이미지
-//        //window.draw(player1Sprite);             // player1
-//        //window.draw(player2Sprite);             // player2
-//        window.draw(Background);
-//        window.draw(gameText);
-//        window.draw(userInputText);
-//        window.draw(ladderImgSpriteLeft);
-//        window.draw(ladderImgSpriteRight);
-//        window.draw(currentSentence);
-//        window.draw(nextSentence);
-//        window.draw(inputBackground);  // 먼저 배경을 그림
-//        //window.draw(userInputText);    // 그 다음 텍스트를 그림
-//        //window.draw(user1Text);
-//        //window.draw(user2Text);
-//
-//        // 커서 표시 여부 결정
-//        if (showCursor) {
-//            window.draw(cursor);
-//        }
-//
-//        //window.draw(inputBackground);
-//        window.display();
-//    }
-//
-//}
 
 // 문장 통채로 출력
 void GameManager::drawOriginTotalText(sf::RenderWindow& window,
     sf::Font& font,
     int fontSize,
     std::vector<std::vector<std::wstring>>& fileAllLines) {
-    float x = MAIN_WINDOW_WIDTH / 0.6f * 0.1f;
-    float y = 250.f; // y를 누적해서 줄 간격 주기
 
-    // 텍스트 영역의 너비 (1/6 크기로 제한)
-    float maxWidth = MAIN_WINDOW_WIDTH * (1.4f / 6.0f); 
+    // section 10개로 나누기
+    const float sectionWidth = MAIN_WINDOW_WIDTH / 10.f; 
+    const float sectionHeight = MAIN_WINDOW_HEIGHT / 4.f;
+
+
+    // === 디버깅용: 가로 10등분 영역 시각화 ===
+    //for (int i = 0; i < 10; ++i) {
+    //    sf::RectangleShape rect(sf::Vector2f(sectionWidth, MAIN_WINDOW_HEIGHT));
+    //    rect.setPosition({ i * sectionWidth, 0 });
+
+    //    // 색상은 구간마다 다르게 설정
+    //    switch (i % 4) {
+    //    case 0: rect.setFillColor(sf::Color(255, 0, 0, 40)); break;     // 빨강
+    //    case 1: rect.setFillColor(sf::Color(0, 255, 0, 40)); break;     // 초록
+    //    case 2: rect.setFillColor(sf::Color(0, 0, 255, 40)); break;     // 파랑
+    //    case 3: rect.setFillColor(sf::Color(255, 255, 0, 40)); break;   // 노랑
+    //    }
+
+    //    window.draw(rect);
+    //}
+
+    // 기준 문장 위치 (화면 10/2부터 시작)
+    float x = sectionWidth * 1.5;
+    float y = sectionHeight * 1.5; // y를 누적해서 줄 간격 주기
+
+    // 텍스트 영역의 너비 (10/3 크기로 제한)
+    float maxWidth = sectionWidth * 3;
 
     // 한 글자씩 입력
     // 한글 / 영어일때 수정해줘야 됨 drawUserInputText도 같이
@@ -862,7 +519,7 @@ void GameManager::drawOriginTotalText(sf::RenderWindow& window,
 
     // 배경 크기 설정 (텍스트 크기보다 여유 공간 추가)
     float padding = 20.f;  // 여백 추가
-    float backgroundWidth = MAIN_WINDOW_WIDTH * (1.6f / 6.0f) + padding ;  // 가장 긴 텍스트 기준
+    float backgroundWidth = maxTextWidth + padding ;  // 가장 긴 텍스트 기준
     float backgroundHeight = totalTextHeight + padding;  // 전체 높이
 
 
@@ -873,16 +530,6 @@ void GameManager::drawOriginTotalText(sf::RenderWindow& window,
 
     window.draw(OriginBackground); // 배경 먼저 그림
 
-    //// 불투명 배경 설정
-    //sf::RectangleShape OriginBackground(sf::Vector2f(400.f, 550.f));
-    //// 배경 크기 가져오기
-    //FloatRect OriginbgBounds = OriginBackground.getGlobalBounds();
-    //OriginBackground.setOrigin(OriginbgBounds.getCenter()); // 중앙 기준 정렬
-
-    //OriginBackground.setFillColor(sf::Color(224, 224, 224, 200)); // 마지막 - 투명도
-    //OriginBackground.setPosition(Vector2f(MAIN_WINDOW_WIDTH * (2.0f / 6.0f), y));
-
-    //window.draw(OriginBackground); // 배경 그리기
     for (int i = 0; i < fileAllLines.size(); ++i)
     {
         for (size_t j = 0; j < fileAllLines[i].size(); ++j)
@@ -946,12 +593,15 @@ void GameManager::drawOriginText(
     std::vector<std::vector<std::wstring>>& fileAllLines)
 {
     if (currentLineIndex >= fileAllLines.size()) return; // 모든 줄 출력 완료
-    //float x = 200.f;
-    float x = MAIN_WINDOW_WIDTH * (4.5f / 6.0f); // 오른쪽 중앙
-    // 화면의 1/6 영역으로 제한 (4/6 ~ 5/6)
-    float areaWidth = MAIN_WINDOW_WIDTH * (2.0f / 6.0f);
-    float y = 250.f; // y를 누적해서 줄 간격 주기
+    const float sectionWidth = MAIN_WINDOW_WIDTH / 10.f; // = 72.0f
+    const float sectionHeight = MAIN_WINDOW_HEIGHT / 4.f;
 
+    //float x = 200.f;
+    float x = sectionWidth * 7.5f; // 오른쪽 중앙
+    // 화면의 1/6 영역으로 제한 (4/6 ~ 5/6)
+    float areaWidth = sectionWidth * 3;
+    float y = sectionHeight * 1.5; // y를 누적해서 줄 간격 주기
+    
     //한 글자씩 입력
     //한글 / 영어일때 수정해줘야 됨 drawUserInputText도 같이
     float letterSpacing = fontSize * 0.50f; // 영어
@@ -988,7 +638,7 @@ void GameManager::drawOriginText(
             FloatRect bgBounds = Background.getGlobalBounds();
             Background.setOrigin(bgBounds.getCenter()); // 중앙 기준 정렬
 
-            Background.setFillColor(sf::Color(224, 224, 224, 200)); // 마지막 - 투명도
+            Background.setFillColor(sf::Color(96, 96, 96, 200)); // 마지막 - 투명도
             Background.setPosition(Vector2f(x, y + 100.f));
              
             sf::Text nextSentence(font, fileAllLines[currentLineIndex + 1][0], fontSize / 2);
@@ -1024,11 +674,13 @@ void GameManager::drawUserInputText(
     std::vector<std::vector<std::wstring>>& sentences)
 {
     if (currentLineIndex >= userInputs.size()) return; // 모든 입력이 끝나면 종료
-
+    const float sectionWidth = MAIN_WINDOW_WIDTH / 10.f; // = 72.0f
+    const float sectionHeight = MAIN_WINDOW_HEIGHT / 4.f;
     //float x = 200.f;
-    float x = MAIN_WINDOW_WIDTH * (4.5f / 6.0f);
-    float areaWidth = MAIN_WINDOW_WIDTH * (1.5f / 6.0f);
-    float y = 500.f; // y를 누적해서 줄 간격 주기
+
+    float x = sectionWidth * 7.5f;
+    float areaWidth = sectionWidth * 4;
+    float y = sectionHeight * 3; // y를 누적해서 줄 간격 주기
 
     // 한 글자씩 입력
     // 한글 / 영어일때 수정해줘야 됨 drawOriginalText도 같이
@@ -1046,7 +698,7 @@ void GameManager::drawUserInputText(
 
     FloatRect inputTextBounds = inputBackground.getGlobalBounds();
     inputBackground.setOrigin(inputTextBounds.getCenter());
-    inputBackground.setPosition({ MAIN_WINDOW_WIDTH * (4.5f / 6.0f), 500.f });
+    inputBackground.setPosition({ x , y });
 
     window.draw(inputBackground);
 
@@ -1062,11 +714,6 @@ void GameManager::drawUserInputText(
     {
         Text inputText(font, inputLine.substr(k, 1), fontSize) ;
 
-        //FloatRect textBounds = inputText.getLocalBounds();
-        //inputText.setOrigin(textBounds.getCenter());
-        //// 입력창 내부에 텍스트 배치 (입력창과 같은 위치)
-        //inputText.setPosition(inputBackground.getPosition());
-
         if (k < targetLine.size() && inputLine[k] == targetLine[k]) {
             inputText.setFillColor(sf::Color::Green); // 맞으면 초록색
         }
@@ -1077,15 +724,12 @@ void GameManager::drawUserInputText(
         inputText.setOrigin(Vector2f(0.0f, 0.0f));
 
         // **입력창 안에서 한 글자씩 배치**
-        float textX = x - (inputLine.size() * letterSpacing) / 2 + k * letterSpacing;
+        float textX = x - (inputLine.size() * letterSpacing * scale) / 2 + k * letterSpacing * scale;
+        //float textX = x - (inputLine.size() * letterSpacing) / 2 + k * letterSpacing;
         float textY = y - fontSize / 2; // 입력창 중앙에 오도록 조정
         inputText.setPosition(Vector2f(textX, textY));
         inputText.setScale(Vector2f(scale, scale)); // 필요시 스케일 조정
-        //FloatRect inputTextBounds = inputText.getGlobalBounds();
-        //inputText.setOrigin(inputTextBounds.getCenter());
-        //inputText.setPosition({ x, y + 200.f }); // 현재 문장 아래 위치
 
-        //inputText.setPosition({ x + k * letterSpacing, y });
         window.draw(inputText);
     }
     //// 커서 추가 (깜박이기 기능)
@@ -1101,7 +745,12 @@ void GameManager::drawUserInputText(
         sf::RectangleShape cursor(sf::Vector2f(2.f, fontSize));
         cursor.setFillColor(sf::Color::Black);
 
-        float cursorX = x - (inputLine.size() * letterSpacing) / 2 + inputLine.size() * letterSpacing + 3.f;
+        float inputCenterX = inputBackground.getPosition().x;
+
+        //float cursorX = x - (inputLine.size() * letterSpacing) / 2 + inputLine.size() * letterSpacing + 3.f;
+        float cursorX = x - (inputLine.size() * letterSpacing * scale) / 2 + inputLine.size() * letterSpacing * scale + 3.f;
+
+        //float cursorX = inputCenterX - (inputLine.size() * letterSpacing) / 2 + inputLine.size() * letterSpacing + 3.f;
         float cursorY = y - fontSize / 2;
         cursor.setPosition(Vector2f(cursorX, cursorY));
 

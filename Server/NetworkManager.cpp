@@ -16,6 +16,7 @@ NetworkManager::~NetworkManager() {
     std::cout << "NetworkManager 소멸!" << std::endl;
 }
 
+
 bool NetworkManager::connectToServer() {
     // 서버에 연결 시도 (IP: 포트: 53000) // 210,119,12,60
     sf::IpAddress serverIP = {210,119,12,60};
