@@ -6,24 +6,24 @@
 
 namespace fs = std::filesystem;
 
-std::string getRandomFile(const std::string& folderPath, const std::string& extension) {
+std::wstring getRandomFile(const std::wstring& folderPath, const std::wstring& extension) {
     static int callCount = 0; // 호출 횟수 확인
     callCount++;
 
-    std::vector<std::string> files;
+    std::vector<std::wstring> files;
     std::wcout << L"[디버깅] getRandomFile 실행됨" << std::endl;
     std::wcout << L"getRandomFile 실행 (" << callCount << L"번째 호출)" << std::endl;
 
 
     for (const auto& entry : fs::directory_iterator(folderPath)) {
         if (entry.path().extension() == extension) {
-            files.push_back(entry.path().string());
+            files.push_back(entry.path().wstring());
         }
     }
 
     if (files.empty()) {
         std::cerr << "파일이 없습니다." << std::endl;
-        return "";
+        return L"";
     }
 
     std::random_device rd;

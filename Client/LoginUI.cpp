@@ -19,7 +19,7 @@ void showSignupWindow(RenderWindow& window, MySQLConnector& db) {
     string nickname, id, password;
     bool isNicknameActive = true, isIdActive = false, isPassActive = false, showPassword = false;
     Font font;
-    font.openFromFile("D2Coding.ttf");
+    font.openFromFile("assets/font/D2Coding.ttf");
 
     Text title(font, L"회원가입", 30);
     title.setPosition({ 200, 50 });
@@ -236,13 +236,12 @@ void showSignupWindow(RenderWindow& window, MySQLConnector& db) {
     }
 }
 
-
 bool showLoginWindow(RenderWindow& window, MySQLConnector& db, std::string& userID) {
     string id, password;
     bool isIdActive = false, isPassActive = false, showPassword = false;
 
     Font font;
-    font.openFromFile("D2Coding.ttf");
+    font.openFromFile("assets/font/D2Coding.ttf");
 
     // 창 크기 설정
     Vector2f windowSize(1280, 720);
@@ -250,15 +249,24 @@ bool showLoginWindow(RenderWindow& window, MySQLConnector& db, std::string& user
         static_cast<unsigned int>(windowSize.y) }),
         L"타자연습 게임");
 
-    // 중앙 정렬 기준 (X 중앙 위치)
-    float centerX = windowSize.x / 2;
+    // 배경 이미지 로딩
+    Texture bgTexture;
+    if (!bgTexture.loadFromFile("assets/image/login.png")) {
+        cerr << "로그인 배경 이미지 로딩 실패!" << endl;
+        return false;
+    }
+    Sprite background(bgTexture);
+    background.setScale(Vector2f(
+        windowSize.x / static_cast<float>(bgTexture.getSize().x),
+        windowSize.y / static_cast<float>(bgTexture.getSize().y)
+    ));
 
-    Text title(font, L"로그인", 40);
-    title.setPosition({ centerX - 60, 100 });
-    title.setFillColor(Color::White);
+    // 왼쪽 정렬 기준 X값으로 이동
+    float leftX = 330;
+    float shiftY = 100;
 
     Text status(font, "", 24);
-    status.setPosition({ centerX - 130, 150 });
+    status.setPosition({ leftX, 160 + shiftY });
     status.setFillColor(Color::Red);
 
     RectangleShape inputBox(Vector2f(400, 50));
@@ -267,47 +275,47 @@ bool showLoginWindow(RenderWindow& window, MySQLConnector& db, std::string& user
     inputBox.setOutlineThickness(2);
 
     RectangleShape idBox = inputBox, passBox = inputBox;
-    idBox.setPosition({ centerX - 200, 200 });
-    passBox.setPosition({ centerX - 200, 280 });
+    idBox.setPosition({ leftX, 200 + shiftY });
+    passBox.setPosition({ leftX, 280 + shiftY });
 
     Text idLabel(font, "ID:", 24), passLabel(font, "PW:", 24);
-    idLabel.setPosition({ centerX - 250, 210 });
-    passLabel.setPosition({ centerX - 250, 290 });
+    idLabel.setPosition({ leftX - 50, 210 + shiftY });
+    passLabel.setPosition({ leftX - 50, 290 + shiftY });
     idLabel.setFillColor(Color::White);
     passLabel.setFillColor(Color::White);
 
     Text idText(font, "", 24), passText(font, "", 24);
-    idText.setPosition({ centerX - 190, 210 });
-    passText.setPosition({ centerX - 190, 290 });
+    idText.setPosition({ leftX + 10, 210 + shiftY });
+    passText.setPosition({ leftX + 10, 290 + shiftY });
     idText.setFillColor(Color::Black);
     passText.setFillColor(Color::Black);
 
     RectangleShape loginButton(Vector2f(250, 60));
-    loginButton.setPosition({ centerX - 125, 380 });
+    loginButton.setPosition({ leftX, 370 + shiftY });
     loginButton.setFillColor(Color::Green);
 
     Text loginText(font, "Login", 28);
-    loginText.setPosition({ centerX - 40, 395 });
+    loginText.setPosition({ leftX + 85, 385 + shiftY });
     loginText.setFillColor(Color::White);
 
     RectangleShape signupButton(Vector2f(250, 60));
-    signupButton.setPosition({ centerX - 125, 460 });
+    signupButton.setPosition({ leftX, 450 + shiftY });
     signupButton.setFillColor(Color::Blue);
 
     Text signupText(font, "Sign Up", 28);
-    signupText.setPosition({ centerX - 50, 475 });
+    signupText.setPosition({ leftX + 75, 465 + shiftY });
     signupText.setFillColor(Color::White);
 
     RectangleShape checkbox(Vector2f(25, 25));
-    checkbox.setPosition({ centerX - 200, 340 });
+    checkbox.setPosition({ leftX, 335 + shiftY });
     checkbox.setFillColor(Color::White);
 
     Text checkboxLabel(font, "Show Password", 24);
-    checkboxLabel.setPosition({ centerX - 160, 340 });
+    checkboxLabel.setPosition({ leftX + 40, 330 + shiftY });
     checkboxLabel.setFillColor(Color::White);
 
     Text checkMark(font, "V", 24);
-    checkMark.setPosition({ centerX - 190, 337 });
+    checkMark.setPosition({ leftX + 5, 332 + shiftY });
     checkMark.setFillColor(Color::Black);
     checkMark.setString("");
 
@@ -316,15 +324,6 @@ bool showLoginWindow(RenderWindow& window, MySQLConnector& db, std::string& user
     float cursorTimer = 0.f;
     float cursorBlinkRate = 10.f;
     bool cursorVisible = true;
-
-    //  "랭킹 보기" 버튼 추가 (하단 배치)
-    RectangleShape rankingButton(Vector2f(250, 60));
-    rankingButton.setPosition({ centerX - 125, 540 });
-    rankingButton.setFillColor(Color::Yellow);
-
-    Text rankingText(font, "View Ranking", 28);
-    rankingText.setPosition({ centerX - 80, 555 });
-    rankingText.setFillColor(Color::Black);
 
     while (window.isOpen()) {
         float deltaTime = 1.f / 60.f;
@@ -350,9 +349,7 @@ bool showLoginWindow(RenderWindow& window, MySQLConnector& db, std::string& user
                         userID = id;
                         window.display();
                         this_thread::sleep_for(chrono::seconds(2));
-
-                        // 로그인 성공 후 게임 화면 실행
-                        return true;  // 로그인 성공 후 게임 화면 실행으로 전환
+                        return true;
                     }
                     else {
                         status.setFillColor(Color::Red);
@@ -361,10 +358,6 @@ bool showLoginWindow(RenderWindow& window, MySQLConnector& db, std::string& user
                 }
                 else if (signupButton.getGlobalBounds().contains(mousePos)) {
                     showSignupWindow(window, db);
-                }
-                else if (rankingButton.getGlobalBounds().contains(mousePos)) {
-                    RankingUI rankingUI;
-                    rankingUI.show();
                 }
 
                 isIdActive = idBox.getGlobalBounds().contains(mousePos);
@@ -387,14 +380,8 @@ bool showLoginWindow(RenderWindow& window, MySQLConnector& db, std::string& user
 
             if (event->is<Event::KeyPressed>()) {
                 if (Keyboard::isKeyPressed(Keyboard::Key::Tab)) {
-                    if (isIdActive) {
-                        isIdActive = false;
-                        isPassActive = true;
-                    }
-                    else if (isPassActive) {
-                        isPassActive = false;
-                        isIdActive = true;
-                    }
+                    isIdActive = !isIdActive;
+                    isPassActive = !isPassActive;
                 }
             }
         }
@@ -406,14 +393,14 @@ bool showLoginWindow(RenderWindow& window, MySQLConnector& db, std::string& user
         }
 
         if (cursorVisible && isIdActive) {
-            cursor.setPosition({ centerX - 190 + idText.getLocalBounds().size.x, 210 });
+            cursor.setPosition({ leftX + 10 + idText.getLocalBounds().size.x , 210 + shiftY });
         }
         else if (cursorVisible && isPassActive) {
-            cursor.setPosition({ centerX - 190 + passText.getLocalBounds().size.x, 290 });
+            cursor.setPosition({ leftX + 10 + passText.getLocalBounds().size.x, 290 + shiftY });
         }
 
         window.clear(Color::Black);
-        window.draw(title);
+        window.draw(background);
         window.draw(idLabel);
         window.draw(passLabel);
         window.draw(idBox);
@@ -428,8 +415,6 @@ bool showLoginWindow(RenderWindow& window, MySQLConnector& db, std::string& user
         window.draw(checkbox);
         window.draw(checkboxLabel);
         window.draw(checkMark);
-        window.draw(rankingButton);
-        window.draw(rankingText);
         if (cursorVisible) window.draw(cursor);
         window.display();
     }

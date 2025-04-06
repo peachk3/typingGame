@@ -1,6 +1,8 @@
 #include "RankingUI.hpp"
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Color.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -8,7 +10,8 @@
 #include <jdbc/mysql_connection.h>
 #include <jdbc/cppconn/statement.h>
 #include <jdbc/cppconn/resultset.h>
-#include <SFML/Graphics/Color.hpp>
+#include <Windows.h>
+#include <sstream>  // std::wstringstream 사용을 위해 필요
 
 using namespace std;
 using namespace sf;
@@ -19,16 +22,22 @@ using namespace sql;
 #define PASSWORD    "1234"
 #define DATABASE    "teamDB"
 
+std::wstring StringToWString(const std::string& str) {
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    std::wstring wstrTo(size_needed - 1, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstrTo[0], size_needed);
+    return wstrTo;
+}
+
 RankingUI::RankingUI() {
-    if (!font.openFromFile("D2Coding.ttf")) {
+    if (!font.openFromFile("assets/font/D2Coding.ttf")) {
         std::cerr << "폰트 로드 실패!" << std::endl;
-        return; // 폰트 로드 실패 시 더 이상 진행하지 않음
+        return;
     }
 
     float windowWidth = 900.f;
     float windowHeight = 600.f;
 
-    // titleText 및 backButtonText를 안전하게 초기화
     titleText.emplace(font, L"랭킹 목록", 40);
     titleText->setFillColor(sf::Color::White);
     titleText->setPosition({ windowWidth / 2.f - titleText->getLocalBounds().size.x / 2.f, 10.f });
@@ -44,122 +53,196 @@ RankingUI::RankingUI() {
         backButton.getPosition().y + 10.f
         });
 
-    // 버튼의 가로 크기 및 간격 설정
-    float buttonWidth = 150.f; // 버튼 가로 크기
-    float buttonHeight = 40.f; // 버튼 세로 크기
-    float spacing = 60.f; // 버튼 간격
+    float buttonWidth = 150.f;
+    float buttonHeight = 40.f;
+    float spacing = 60.f;
 
-    // 버튼들이 배치될 X 시작 위치 계산 (중앙 정렬)
-    float totalButtonsWidth = 3 * buttonWidth + 2 * spacing; // 세 버튼의 총 너비 + 간격
-    float buttonStartX = (windowWidth - totalButtonsWidth) / 2.f; // 중앙 정렬을 위한 X 시작 위치
+    float totalButtonsWidth = 3 * buttonWidth + 2 * spacing;
+    float buttonStartX = (windowWidth - totalButtonsWidth) / 2.f;
 
-    // 총 점수 버튼 설정
+    // Total Score
     totalScoreButton.setSize({ buttonWidth, buttonHeight });
-    totalScoreButton.setFillColor(sf::Color::White);
     totalScoreButton.setPosition({ buttonStartX, 70.f });
 
-    // 총 점수 버튼 텍스트 설정
     totalScoreButtonText.emplace(font, L"총 점수", 20);
-    totalScoreButtonText->setFillColor(sf::Color::Black);
     totalScoreButtonText->setPosition({
-        totalScoreButton.getPosition().x + (totalScoreButton.getSize().x / 2.f - totalScoreButtonText->getLocalBounds().size.x / 2.f),
-        totalScoreButton.getPosition().y + (totalScoreButton.getSize().y / 2.f - totalScoreButtonText->getLocalBounds().size.y / 2.f)
+        totalScoreButton.getPosition().x + (buttonWidth / 2.f - totalScoreButtonText->getLocalBounds().size.x / 2.f),
+        totalScoreButton.getPosition().y + (buttonHeight / 2.f - totalScoreButtonText->getLocalBounds().size.y / 2.f)
         });
 
-    // 총 게임 시간 버튼 설정
+    // Total Time
     totalTimeButton.setSize({ buttonWidth, buttonHeight });
-    totalTimeButton.setFillColor(sf::Color::White);
-    totalTimeButton.setPosition({ buttonStartX + totalScoreButton.getSize().x + spacing, 70.f });
+    totalTimeButton.setPosition({ buttonStartX + buttonWidth + spacing, 70.f });
 
-    // 총 게임 시간 버튼 텍스트 설정
     totalTimeButtonText.emplace(font, L"총 게임 시간", 20);
-    totalTimeButtonText->setFillColor(sf::Color::Black);
     totalTimeButtonText->setPosition({
-        totalTimeButton.getPosition().x + (totalTimeButton.getSize().x / 2.f - totalTimeButtonText->getLocalBounds().size.x / 2.f),
-        totalTimeButton.getPosition().y + (totalTimeButton.getSize().y / 2.f - totalTimeButtonText->getLocalBounds().size.y / 2.f)
+        totalTimeButton.getPosition().x + (buttonWidth / 2.f - totalTimeButtonText->getLocalBounds().size.x / 2.f),
+        totalTimeButton.getPosition().y + (buttonHeight / 2.f - totalTimeButtonText->getLocalBounds().size.y / 2.f)
         });
 
-    // 평균 타수 버튼 설정
+    // Average Speed
     avgSpeedButton.setSize({ buttonWidth, buttonHeight });
-    avgSpeedButton.setFillColor(sf::Color::White);
-    avgSpeedButton.setPosition({ buttonStartX + totalScoreButton.getSize().x + totalTimeButton.getSize().x + 2 * spacing, 70.f });
+    avgSpeedButton.setPosition({ buttonStartX + 2 * (buttonWidth + spacing), 70.f });
 
-    // 평균 타수 버튼 텍스트 설정
     avgSpeedButtonText.emplace(font, L"평균 타수", 20);
-    avgSpeedButtonText->setFillColor(sf::Color::Black);
     avgSpeedButtonText->setPosition({
-        avgSpeedButton.getPosition().x + (avgSpeedButton.getSize().x / 2.f - avgSpeedButtonText->getLocalBounds().size.x / 2.f),
-        avgSpeedButton.getPosition().y + (avgSpeedButton.getSize().y / 2.f - avgSpeedButtonText->getLocalBounds().size.y / 2.f)
+        avgSpeedButton.getPosition().x + (buttonWidth / 2.f - avgSpeedButtonText->getLocalBounds().size.x / 2.f),
+        avgSpeedButton.getPosition().y + (buttonHeight / 2.f - avgSpeedButtonText->getLocalBounds().size.y / 2.f)
         });
-
 
     std::cout << "RankingUI 생성자 완료" << std::endl;
-    openDataFromDB();
+    refreshRanking();
 }
-
-
 
 RankingUI::~RankingUI() {
     std::cout << "RankingUI 소멸자 호출됨." << std::endl;
+}
+
+void RankingUI::refreshRanking() {
+    openDataFromDB();
+
+    float visibleHeight = 400.f; // 100~500 영역
+    maxScrollOffset = std::max(0.f, static_cast<float>(rankingTexts.size() * 50 - visibleHeight));
+    scrollOffset = std::clamp(scrollOffset, 0.f, maxScrollOffset);
 }
 
 void RankingUI::openDataFromDB() {
     rankingTexts.clear();
 
     try {
-        sql::mysql::MySQL_Driver* driver;
-        sql::Connection* conn;
-        sql::Statement* stmt;
-        sql::ResultSet* res;
-
-        driver = sql::mysql::get_mysql_driver_instance();
-        conn = driver->connect(SERVER_IP, USERNAME, PASSWORD);
+        sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
+        std::unique_ptr<sql::Connection> conn(driver->connect(SERVER_IP, USERNAME, PASSWORD));
         conn->setSchema(DATABASE);
 
-        stmt = conn->createStatement();
-        res = stmt->executeQuery("SELECT user_id, point FROM rankings ORDER BY point DESC LIMIT 100;");
+        std::unique_ptr<sql::Statement> stmt(conn->createStatement());
+        std::unique_ptr<sql::ResultSet> res;
 
         float startY = 150.f;
         float spacing = 50.f;
         int rank = 1;
-        const int fixedUserIDWidth = 15;  // user_id 고정 너비
-        const int fixedPointWidth = 6;   // point 고정 너비 (최대 999999)
 
-        while (res->next()) {
-            string userID = res->getString("user_id");
-            int point = res->getInt("point");
+        switch (currentSort) {
+        case SortMode::TotalScore: {
+            std::string query = "SELECT user_id, point FROM rankings ORDER BY point DESC LIMIT 100;";
+            res.reset(stmt->executeQuery(query));
 
-            // user_id 길이 맞추기 (짧으면 공백 추가, 길면 자름)
-            if (userID.length() < fixedUserIDWidth) {
-                userID.append(fixedUserIDWidth - userID.length(), ' ');
+            const int fixedUserIDWidth = 12;
+            const int fixedPointWidth = 6;
+
+            while (res->next()) {
+                std::string userID = res->getString("user_id");
+                int point = res->getInt("point");
+
+                // user_id 길이 고정
+                if (userID.length() < fixedUserIDWidth) {
+                    userID.append(fixedUserIDWidth - userID.length(), ' ');
+                }
+                else {
+                    userID = userID.substr(0, fixedUserIDWidth);
+                }
+
+                // 점수 폭 고정
+                std::string pointStr = std::to_string(point);
+                if (pointStr.length() < fixedPointWidth) {
+                    pointStr.insert(0, fixedPointWidth - pointStr.length(), ' ');
+                }
+
+                std::wstring rankText = std::to_wstring(rank) + L". " + StringToWString(userID)
+                    + L" | " + StringToWString(pointStr) + L"점";
+                sf::Text text(font, rankText, 30);
+                text.setFillColor(sf::Color::White);
+                text.setPosition({ 450.f - text.getLocalBounds().size.x / 2.f, startY });
+
+                rankingTexts.push_back(text);
+                startY += spacing;
+                rank++;
             }
-            else {
-                userID = userID.substr(0, fixedUserIDWidth);
-            }
-
-            // point를 6자리로 맞추기 (앞에 공백 추가)
-            string pointStr = to_string(point);
-            if (pointStr.length() < fixedPointWidth) {
-                pointStr.insert(0, fixedPointWidth - pointStr.length(), ' ');
-            }
-
-            // 최종적으로 정렬된 텍스트 구성
-            string rankText = to_string(rank) + ". " + userID + " | Point: " + pointStr;
-
-            sf::Text text(font, rankText, 30);
-            text.setFillColor(sf::Color::White);
-
-            float textWidth = text.getLocalBounds().size.x;
-            text.setPosition({ 450.f - textWidth / 2.f, startY });
-
-            rankingTexts.push_back(text);
-            startY += spacing;
-            rank++;
+            break;
         }
 
-        delete res;
-        delete stmt;
-        delete conn;
+        case SortMode::TotalTime: {
+            std::string query = "SELECT user_id, total_play_time FROM user_stats ORDER BY total_play_time DESC LIMIT 100;";
+            res.reset(stmt->executeQuery(query));
+
+            const int fixedUserIDWidth = 12;
+
+            while (res->next()) {
+                std::string userID = res->getString("user_id");
+                int totalTime = res->getInt("total_play_time");
+
+                // user_id 길이 고정
+                if (userID.length() < fixedUserIDWidth) {
+                    userID.append(fixedUserIDWidth - userID.length(), ' ');
+                }
+                else {
+                    userID = userID.substr(0, fixedUserIDWidth);
+                }
+
+                int hours = totalTime / 3600;
+                int minutes = (totalTime % 3600) / 60;
+                int seconds = totalTime % 60;
+
+                std::wstringstream timeStream;
+                timeStream << std::setw(2) << std::setfill(L'0') << hours << L":"
+                    << std::setw(2) << std::setfill(L'0') << minutes << L":"
+                    << std::setw(2) << std::setfill(L'0') << seconds;
+
+                // ex) 01:05:09 형식
+
+                std::wstring rankText = std::to_wstring(rank) + L". " + StringToWString(userID)
+                    + L" | " + timeStream.str();
+                sf::Text text(font, rankText, 30);
+                text.setFillColor(sf::Color::White);
+                text.setPosition({ 450.f - text.getLocalBounds().size.x / 2.f, startY });
+
+                rankingTexts.push_back(text);
+                startY += spacing;
+                rank++;
+            }
+            break;
+        }
+
+        case SortMode::AvgSpeed: {
+            std::string query = "SELECT user_id, avg_speed FROM user_stats ORDER BY avg_speed DESC LIMIT 100;";
+            res.reset(stmt->executeQuery(query));
+
+            const int fixedUserIDWidth = 12;
+            const int fixedSpeedWidth = 6;
+
+            while (res->next()) {
+                std::string userID = res->getString("user_id");
+                int avgSpeed = res->getInt("avg_speed");
+
+                // user_id 길이 고정
+                if (userID.length() < fixedUserIDWidth) {
+                    userID.append(fixedUserIDWidth - userID.length(), ' ');
+                }
+                else {
+                    userID = userID.substr(0, fixedUserIDWidth);
+                }
+
+                // 속도 폭 고정
+                std::string speedStr = std::to_string(avgSpeed);
+                if (speedStr.length() < fixedSpeedWidth) {
+                    speedStr.insert(0, fixedSpeedWidth - speedStr.length(), ' ');
+                }
+
+                std::wstring rankText = std::to_wstring(rank) + L". " + StringToWString(userID)
+                    + L" | " + StringToWString(speedStr) + L"타";
+                sf::Text text(font, rankText, 30);
+
+
+                text.setFillColor(sf::Color::White);
+                text.setPosition({ 450.f - text.getLocalBounds().size.x / 2.f, startY });
+
+                rankingTexts.push_back(text);
+                startY += spacing;
+                rank++;
+            }
+            break;
+        }
+        }
+
     }
     catch (sql::SQLException& e) {
         std::cerr << "MySQL 오류: " << e.what() << std::endl;
@@ -194,22 +277,26 @@ void RankingUI::show() {
                 return;
             }
             else if (event->is<Event::MouseButtonPressed>()) {
-                // 버튼 클릭 처리 (중복된 코드 제거)
-                if (backButton.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(rankingWindow)))) {
+                Vector2f mousePos(Mouse::getPosition(rankingWindow));
+
+                if (backButton.getGlobalBounds().contains(mousePos)) {
                     rankingWindow.close();
                 }
-                else if (totalScoreButton.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(rankingWindow)))) {
-                    std::cout << "Total Score 버튼 클릭됨." << std::endl;
+                else if (totalScoreButton.getGlobalBounds().contains(mousePos)) {
+                    currentSort = SortMode::TotalScore;
+                    refreshRanking();
                 }
-                else if (totalTimeButton.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(rankingWindow)))) {
-                    std::cout << "Total Time 버튼 클릭됨." << std::endl;
+                else if (totalTimeButton.getGlobalBounds().contains(mousePos)) {
+                    currentSort = SortMode::TotalTime;
+                    refreshRanking();
                 }
-                else if (avgSpeedButton.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(rankingWindow)))) {
-                    std::cout << "Avg Speed 버튼 클릭됨." << std::endl;
+                else if (avgSpeedButton.getGlobalBounds().contains(mousePos)) {
+                    currentSort = SortMode::AvgSpeed;
+                    refreshRanking();
                 }
-                else if (scrollBar.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(rankingWindow)))) {
+                else if (scrollBar.getGlobalBounds().contains(mousePos)) {
                     isDragging = true;
-                    dragStartY = Mouse::getPosition(rankingWindow).y - scrollBar.getPosition().y;
+                    dragStartY = mousePos.y - scrollBar.getPosition().y;
                 }
             }
             else if (event->is<Event::MouseWheelScrolled>()) {
@@ -238,23 +325,23 @@ void RankingUI::show() {
             }
         }
 
-        rankingWindow.clear(sf::Color::Black);
+        // 버튼 색 갱신
+        totalScoreButton.setFillColor(currentSort == SortMode::TotalScore ? Color(255, 0, 0) : Color(128, 128, 128));
+        totalTimeButton.setFillColor(currentSort == SortMode::TotalTime ? Color(0, 255, 0) : Color(128, 128, 128));
+        avgSpeedButton.setFillColor(currentSort == SortMode::AvgSpeed ? Color(0, 0, 255) : Color(128, 128, 128));
 
+        rankingWindow.clear(Color::Black);
         rankingWindow.draw(*titleText);
         rankingWindow.draw(backButton);
         rankingWindow.draw(*backButtonText);
-
         rankingWindow.draw(totalScoreButton);
         rankingWindow.draw(*totalScoreButtonText);
-
         rankingWindow.draw(totalTimeButton);
         rankingWindow.draw(*totalTimeButtonText);
-
         rankingWindow.draw(avgSpeedButton);
         rankingWindow.draw(*avgSpeedButtonText);
 
-        // 스크롤 처리
-        sf::View scrollView = view;
+        View scrollView = view;
         scrollView.setCenter({ view.getCenter().x, 300.f + scrollOffset });
         rankingWindow.setView(scrollView);
 
@@ -278,10 +365,8 @@ void RankingUI::show() {
         }
 
         rankingWindow.setView(view);
-
         rankingWindow.draw(scrollBarBackground);
         rankingWindow.draw(scrollBar);
-
         rankingWindow.display();
     }
 }

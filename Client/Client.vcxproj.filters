@@ -33,16 +33,10 @@
     <ClCompile Include="FileLoader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="TextLoader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TextUitl.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GameManager2.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="UIManager.cpp">
+    <ClCompile Include="UIM.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
@@ -60,6 +54,27 @@
     <ClCompile Include="userManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawUI.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawUIR.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSelectList.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultScreen.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TextUtil.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="gameStart.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameManager.h">
@@ -74,7 +89,7 @@
     <ClInclude Include="mainGame.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="UIManager.hpp">
+    <ClInclude Include="UIM.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h">
@@ -93,6 +108,27 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="rankingUI.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSelectList.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawUIR.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawUI.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultScreen.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

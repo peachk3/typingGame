@@ -17,12 +17,11 @@
 #include <string>
 #pragma comment(lib, "Comdlg32.lib")*/
 
-std::optional<std::wstring> FileLoader::openFileDialog() {
+std::optional<std::wstring> openFileDialog() {
     wchar_t filename[MAX_PATH] = L"";
     OPENFILENAMEW ofn{};
     ofn.lStructSize = sizeof(ofn);
     ofn.lpstrFilter = L"텍스트 파일\0*.txt\0모든 파일\0*.*\0파이썬 파일\0*.py\0자바 파일\0*.java\0C++ 파일\0*.cpp\0\0";
-    ofn.nFilterIndex = 2; // 파일 열었을 경우 모든 파일이 가장 먼저 보이게 설정
     ofn.lpstrFile = filename;
     ofn.nMaxFile = MAX_PATH;
     ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
@@ -39,7 +38,7 @@ std::optional<std::wstring> FileLoader::openFileDialog() {
     return std::nullopt;
 }
 
-std::wstring FileLoader::loadText(const std::wstring& filepath) {
+std::wstring loadText(const std::wstring& filepath) {
     std::ifstream file(std::filesystem::path(filepath), std::ios::binary);
     if (!file) return L"파일이 열리지 않습니다.";
 
@@ -65,21 +64,21 @@ std::wstring FileLoader::loadText(const std::wstring& filepath) {
     return result;
 }
 
-std::wstring FileLoader::ansiToWstring(const std::string& str) {
+std::wstring ansiToWstring(const std::string& str) {
     int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, nullptr, 0);
     std::wstring result(len, 0);
     MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, &result[0], len);
     return result;
 }
 
-std::wstring FileLoader::utf8ToWstring(const std::string& str) {
+std::wstring utf8ToWstring(const std::string& str) {
     int len = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
     std::wstring result(len, 0);
     MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &result[0], len);
     return result;
 }
 
-bool FileLoader::isUtf8(const std::string& content) {
+bool isUtf8(const std::string& content) {
     int expected = 0;
     for (unsigned char c : content) {
         if (expected == 0) {

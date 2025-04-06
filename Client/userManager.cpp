@@ -27,6 +27,9 @@ MySQLConnector::~MySQLConnector() {
 
 bool MySQLConnector::checkLogin(const string& id, const string& pw) {
     try {
+        //  수정: ID, PW 모두 대소문자 구분 비교 (BINARY 사용)
+        //string id = "test2";
+        //string pw = "12345";
         std::unique_ptr<sql::PreparedStatement> pstmt(conn->prepareStatement(
             "SELECT password FROM users WHERE user_id = ?"));
         pstmt->setString(1, id);
@@ -59,7 +62,7 @@ bool MySQLConnector::registerUser(const std::string& id, const std::string& pw, 
 
         // 닉네임 중복 체크
         std::unique_ptr<sql::PreparedStatement> checkNicknameStmt(conn->prepareStatement(
-            "SELECT COUNT(*) FROM users WHERE nickname = ?"));
+            "SELECT COUNT(*) FROM users WHERE BINARY nickname = ?"));
         checkNicknameStmt->setString(1, nickname);
         std::unique_ptr<sql::ResultSet> resNickname(checkNicknameStmt->executeQuery());
         if (resNickname->next() && resNickname->getInt(1) > 0) {

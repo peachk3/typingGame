@@ -1,4 +1,4 @@
 #pragma once
 #include <string>
 
-std::string getRandomFile(const std::string& folderPath, const std::string& extension);
+std::wstring getRandomFile(const std::wstring& folderPath, const std::wstring& extension);

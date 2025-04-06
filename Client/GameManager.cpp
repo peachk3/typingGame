@@ -20,6 +20,18 @@
 #include <iomanip>  // 시간을 형식에 맞게 출력하기 위한 헤더
 #include <SFML/Network.hpp>
 
+//---------------------- 추가
+#include "GameState.hpp"
+#include "Scene.hpp"
+#include "UIAlign.hpp"
+#include "DrawUI.hpp"
+#include "ResultScreen.hpp"
+#include "DrawUIR.hpp"
+#include "FileSelectList.hpp"
+/// <summary>
+/// //
+/// </summary>
+
 int MAIN_WINDOW_WIDTH = 1280;
 int MAIN_WINDOW_HEIGHT = 720;
 
@@ -27,16 +39,14 @@ using namespace sf;
 using namespace std;
 namespace fs = filesystem;
 
-std::string folderPath = "./assets/file";
+std::string folderPath = "./assets/file/";
+GameState game;
 
-GameManager game;
-TypingGame tpgame;
+GameManager gameManager;
+//TypingGame tpgame;
 const int GWINDOW_WIDTH = 300;
 const int GWINDOW_HEIGHT = 250;
 const float ROTATION_SPEED = 60.f;  // 회전 속도 (1초당 n도 회전)
-
-FileLoader loader;
-TextUtil util;
 
 
 // 로딩창 설정
@@ -50,7 +60,7 @@ void GameManager::showLoadingScreen(sf::RenderWindow& window, sf::Font& font, bo
         cerr << "이미지 로드 실패!" << endl;
         return;
     }
-     
+
     Sprite sprite(texture);
 
     //sprite.setPosition(Vector2f(float(GWINDOW_WIDTH / 2), float(GWINDOW_HEIGHT / 2))); // 초기 위치 설정
@@ -193,7 +203,7 @@ void GameManager::handleTypingGameMode(FileLoader& loader, TextUtil& util, Typin
     }
 
     // 1. 파일 열기 테스트
-    std::optional<std::wstring> path = loader.openFileDialog();
+    std::optional<std::wstring> path = openFileDialog();
     if (!path) {
         std::wcout << L"[ERROR] 파일을 선택하지 않았습니다." << std::endl;
         system("pause");
@@ -203,15 +213,15 @@ void GameManager::handleTypingGameMode(FileLoader& loader, TextUtil& util, Typin
     std::wcout << L"[INFO] 파일 선택됨: " << path.value() << std::endl;
 
     //// 2. 텍스트 로딩 테스트
-    std::wstring content = loader.loadText(path.value());
+    std::wstring content = loadText(path.value());
     std::wcout << L"[INFO] 파일에서 읽은 내용:\n" << content << L"...\n\n";
     //std::wcout << L"[INFO] 파일에서 읽은 내용:\n" << content.substr(0, 200) << L"...\n\n";
 
     //// 3. 줄 나누기 테스트
-    std::vector<std::wstring> lines = util.splitStrtoVector(content);
+    std::vector<std::wstring> lines = splitStrtoVector(content);
     std::wcout << L"[INFO] 줄 개수: " << lines.size() << std::endl;
 
-    for (int i = 0; i < lines.size(); ++i) {
+    for (size_t i = 0; i < lines.size(); ++i) {
         std::wcout << L"[LINE " << i << L"] " << lines[i] << std::endl;
     }
     /*for (int i = 0; i < std::min((size_t)5, lines.size()); ++i) {
@@ -226,7 +236,7 @@ void GameManager::handleTypingGameMode(FileLoader& loader, TextUtil& util, Typin
         return;
     }
 
-    auto wrapped = util.wrapAllLinesToPixelWidth(lines, font, 30, 1280.f);
+    auto wrapped = wrapAllLinesToPixelWidth(lines, font, 30, 1280.f);
     std::wcout << L"\n[INFO] 줄바꿈 결과 (최대 3줄):" << std::endl;
     /*for (int i = 0; i < std::min((size_t)3, wrapped.size()); ++i) {
         for (const auto& sub : wrapped[i]) {
@@ -241,10 +251,10 @@ void GameManager::handleTypingGameMode(FileLoader& loader, TextUtil& util, Typin
     }
 
     if (userGameManager) {
-        game.runGame2(window, font, 18, wrapped);
+        gameManager.runGame2(window, font, 18, wrapped);
     }
     else {
-        typing.startNewGame(window, font, 18, wrapped);
+        //typing.startNewGame(window, font, 18, wrapped);
     }
 
     //typing.startNewGame(window, font, 18, wrapped);
@@ -255,6 +265,15 @@ void GameManager::handleTypingGameMode(FileLoader& loader, TextUtil& util, Typin
 void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSize,
     std::vector<std::vector<std::wstring>>& sentences) {
 
+    // 배경화면 텍스처와 스프라이트 추가
+    sf::Texture backgroundTexture;
+    // 배경화면 로드
+    if (!backgroundTexture.loadFromFile("./assets/image/back.png")) {
+        std::cerr << "배경화면 로드 실패!" << std::endl;
+        // 로드 실패 시 기본 배경색으로 대체 가능
+    }
+    sf::Sprite backgroundSprite(backgroundTexture);
+    backgroundSprite.setPosition({ 0.f, 0.f }); // 배경화면 위치 설정0, 0);
 
     // 선택한 파일의 총 문장 수
     size_t numSentences = sentences.size();                   // 전체 문장 개수
@@ -381,17 +400,7 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
                     // 현재는 결과가 올바를 때만 다음 문장 입력할 수 있도록 구현
                     if (currentInput == sentences[currentSentenceIdx][currentLineIdx])
                     {
-                        TypingStats stats = tpgame.updateStats(startTime, sentences[currentSentenceIdx][currentLineIdx],
-                            currentInput, backspacePressCount, totalKeyPress);
-
-
-                        totalWpm += stats.wpm;
-                        totalAccuracy += stats.accuracy;
-                        totalTime += stats.elapsedTime;
-                        totalTpm += stats.tmp;
-                        std::wcout << L"totalTpm" << totalTpm << std::endl;
-                        correctLineCount++;
-                        currentLineIdx++;
+                        updateTypingStats(game, totalTime);
                         if (currentLineIdx >= sentences[currentSentenceIdx].size())
                         {
                             // 짧은 문장일 경우 다음 문장으로 이동
@@ -405,8 +414,7 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
                                 auto endTime = std::chrono::high_resolution_clock::now();  // 종료 시간 기록
 
                                 // 전체 문장 종료 결과창 출력
-                                tpgame.showResultWindow(window, font, fontSize, totalWpm / totalLines,
-                                    totalAccuracy / totalLines, totalTime, totalTpm / totalLines, sentences);
+                                resetGameResult(game);
                                 return;
                             }
                             nextLine();
@@ -441,6 +449,10 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
         }
 
         window.clear(Color::White);
+        // 배경화면 그리기 (텍스처 로드 성공 시)
+        window.draw(backgroundSprite);
+        if (backgroundTexture.loadFromFile("./assets/image/back.png")) {
+        }
         window.draw(gameText);
 
         // 현재 문장 표시 업데이트
@@ -469,7 +481,7 @@ void GameManager::drawOriginTotalText(sf::RenderWindow& window,
     std::vector<std::vector<std::wstring>>& fileAllLines) {
 
     // section 10개로 나누기
-    const float sectionWidth = MAIN_WINDOW_WIDTH / 10.f; 
+    const float sectionWidth = MAIN_WINDOW_WIDTH / 10.f;
     const float sectionHeight = MAIN_WINDOW_HEIGHT / 4.f;
 
 
@@ -519,7 +531,7 @@ void GameManager::drawOriginTotalText(sf::RenderWindow& window,
 
     // 배경 크기 설정 (텍스트 크기보다 여유 공간 추가)
     float padding = 20.f;  // 여백 추가
-    float backgroundWidth = maxTextWidth + padding ;  // 가장 긴 텍스트 기준
+    float backgroundWidth = maxTextWidth + padding;  // 가장 긴 텍스트 기준
     float backgroundHeight = totalTextHeight + padding;  // 전체 높이
 
 
@@ -546,7 +558,7 @@ void GameManager::drawOriginTotalText(sf::RenderWindow& window,
                 originaTotalText.setScale(Vector2f(scale, 1.0f));
             }
             window.draw(originaTotalText);
-            y += fontSize * 2.0f ; // 줄 간격 설정
+            y += fontSize * 2.0f; // 줄 간격 설정
         }
     }
 
@@ -601,7 +613,7 @@ void GameManager::drawOriginText(
     // 화면의 1/6 영역으로 제한 (4/6 ~ 5/6)
     float areaWidth = sectionWidth * 3;
     float y = sectionHeight * 1.5; // y를 누적해서 줄 간격 주기
-    
+
     //한 글자씩 입력
     //한글 / 영어일때 수정해줘야 됨 drawUserInputText도 같이
     float letterSpacing = fontSize * 0.50f; // 영어
@@ -640,7 +652,7 @@ void GameManager::drawOriginText(
 
             Background.setFillColor(sf::Color(96, 96, 96, 200)); // 마지막 - 투명도
             Background.setPosition(Vector2f(x, y + 100.f));
-             
+
             sf::Text nextSentence(font, fileAllLines[currentLineIndex + 1][0], fontSize / 2);
             nextSentence.setFillColor(sf::Color(32, 32, 32)); // 어두운 회색
             FloatRect nextTextBounds = nextSentence.getGlobalBounds();
@@ -651,7 +663,7 @@ void GameManager::drawOriginText(
                 float scale = areaWidth / nextTextBounds.size.x;
                 nextSentence.setScale(Vector2f(scale, 1.0f));
             }
-			window.draw(Background); // 배경 그리기
+            window.draw(Background); // 배경 그리기
             window.draw(nextSentence);
         }
     }
@@ -712,7 +724,7 @@ void GameManager::drawUserInputText(
     // 입력 텍스트 출력
     for (size_t k = 0; k < inputLine.size(); ++k)
     {
-        Text inputText(font, inputLine.substr(k, 1), fontSize) ;
+        Text inputText(font, inputLine.substr(k, 1), fontSize);
 
         if (k < targetLine.size() && inputLine[k] == targetLine[k]) {
             inputText.setFillColor(sf::Color::Green); // 맞으면 초록색

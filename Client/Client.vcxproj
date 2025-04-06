@@ -136,15 +136,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\TypingGame.cpp" />
+    <ClCompile Include="DrawUI.cpp" />
+    <ClCompile Include="DrawUIR.cpp" />
     <ClCompile Include="FileLoader.cpp" />
+    <ClCompile Include="FileSelectList.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameManager2.cpp" />
+    <ClCompile Include="gameStart.cpp" />
     <ClCompile Include="LoginUI.cpp" />
     <ClCompile Include="rankingUI.cpp" />
-    <ClCompile Include="TextLoader.cpp" />
-    <ClCompile Include="TextUitl.cpp" />
+    <ClCompile Include="ResultScreen.cpp" />
+    <ClCompile Include="TextUtil.cpp" />
     <ClCompile Include="typingModeHandler.cpp" />
     <ClCompile Include="UIManager.cpp" />
+    <ClCompile Include="UIM.cpp" />
     <ClCompile Include="userManager.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
@@ -152,15 +157,24 @@
     <ClCompile Include="networkManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DrawUI.hpp" />
+    <ClInclude Include="DrawUIR.hpp" />
     <ClInclude Include="FileLoader.hpp" />
+    <ClInclude Include="FileSelectList.hpp" />
     <ClInclude Include="gameManager.h" />
+    <ClInclude Include="GameState.hpp" />
     <ClInclude Include="LoginUI.hpp" />
     <ClInclude Include="mainGame.hpp" />
     <ClInclude Include="rankingUI.hpp" />
-    <ClInclude Include="TextUtil.hpp" />
+    <ClInclude Include="ResultScreen.hpp" />
+    <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="TextUtil.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="TypingGame.hpp" />
     <ClInclude Include="typingModeHandler.hpp" />
     <ClInclude Include="UIManager.hpp" />
+    <ClInclude Include="UIM.hpp" />
     <ClInclude Include="userManager.hpp" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
