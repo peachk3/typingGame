@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-
+#include <iostream>
 //
 // UI 정렬 유틸 - SFML 3.0 기준
 // - FloatRect: position, size 사용
@@ -88,8 +88,7 @@ inline sf::Vector2f getWindowCenterPosition(const sf::RenderWindow& window, cons
 
     float x = centerX - targetBounds.size.x / 2.f;
     float y = centerY - targetBounds.size.y / 2.f;
-    /*std::cout << "x: " << x << "y:"<<  y << std::endl;
-    std::cout << "x: " << window.getSize().x << "y:" << window.getSize().y << std::endl;*/
+    
 
     return { x, y };
 }

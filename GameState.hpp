@@ -14,10 +14,12 @@ struct UserInfo {
     sf::Texture profileTexture;
     int fontSize = 18;
     int point = 0;
+    int ranking = 0;
     //sf::Sprite profileSprite;
 
     // 기록용
-    float bestWPM = 0.f;            
+    float bestWPM = 0.f;    
+    float bestTPM = 0.f;
     float bestAccuracy = 0.f;
     int totalPlayCount = 0;
     float totalPlayTime = 0.f;
@@ -28,8 +30,11 @@ struct UserInfo {
 };
 
 struct ButtonUI {
-    sf::FloatRect loadBtnBounds;    // 파일 불러오기 버튼
-    sf::FloatRect backBtnBounds;    // 이전 화면 버튼
+    sf::FloatRect loadBtnBounds;            // 파일 불러오기 버튼
+    sf::FloatRect selectImgBtnBounds;       // 프로필 바꾸기 버튼
+    sf::FloatRect loadImgBtnBounds;         // 파일 불러오기 버튼
+
+    sf::FloatRect backBtnBounds;            // 이전 화면 버튼
 
 };
 
@@ -64,16 +69,21 @@ struct GameState {
     float tpm = 0.f;
     float progress = 0.f;
     int totalKeyPress = 0;
+    
     //float startTime = 0.f;          // 게임 시작 시간
     std::chrono::time_point<std::chrono::high_resolution_clock> startTime;      // 게임 시작 시간 - 정밀하게 하기 위해서
     float elapsedSeconds = 0.f;       // 경과 시간
 
+    sf::Clock cursorTimer;     // 커서 깜빡임용 타이머
+    bool showCursor = true;    // 깜빡임 토글용
+
     float typingAreaWidth = 1280 * 0.66f;
 
     bool isPaused = false;          // 혹시 모를 일시정지 기능을 위해 
-    bool bHangle = true;            // 한글 파일이면 true, 영어 파일이면 false
+    bool bHangle = false;            // 한글 파일이면 true, 영어 파일이면 false
     bool readyToShowResult = false; // 게임 끝나면 true
-
+    bool showImageOverlay = false;  // 프로필 선택 창 열면 true
+    bool bHoveringThumbnail = false; // 프로필 창 hover
     Scene currentScene = Scene::MAIN_MENU;  // 전역 enum 사용
 
 

@@ -127,7 +127,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DrawUI.cpp" />
+    <ClCompile Include="DrawUIR.cpp" />
+    <ClCompile Include="FileLoader.cpp" />
+    <ClCompile Include="FileSelectList.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ResultScreen.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="TextUtil.cpp" />
+    <ClCompile Include="TypingGame.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DrawUI.hpp" />
+    <ClInclude Include="DrawUIR.hpp" />
+    <ClInclude Include="FileLoader.hpp" />
+    <ClInclude Include="FileSelectList.hpp" />
+    <ClInclude Include="GameState.hpp" />
+    <ClInclude Include="ResultScreen.hpp" />
+    <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="TextUtil.hpp" />
+    <ClInclude Include="TypingGame.hpp" />
+    <ClInclude Include="UIAlign.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

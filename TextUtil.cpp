@@ -16,7 +16,7 @@ std::vector<std::wstring> splitStrtoVector(std::wstring contents)
         line.erase(std::remove(line.begin(), line.end(), L'\r'), line.end());
         line.erase(std::remove(line.begin(), line.end(), L'\t'), line.end());
 
-        line = trim(line);
+        //line = trim(line);
 
         // 특수 문자 제거
         line = removeUninputtableCharacters(line);
@@ -75,7 +75,7 @@ std::vector<std::vector<std::wstring>> wrapAllLinesToPixelWidth(
 }
 // 공백제거 함수
 std::wstring trim(const std::wstring& str) {
-    const std::wstring whitespace = L" \n\r\t";
+    const std::wstring whitespace = L" \n\r";
 
     size_t start = str.find_first_not_of(whitespace);
     size_t end = str.find_last_not_of(whitespace);
@@ -87,6 +87,10 @@ std::wstring trim(const std::wstring& str) {
 }
 
 bool isKeyboardInputChar(wchar_t ch) {
+    //// 탭 허용
+    //if (ch == L'\t')
+    //    return true;
+
     // ASCII 입력 가능 문자
     if (ch >= 0x20 && ch <= 0x7E)
         return true;

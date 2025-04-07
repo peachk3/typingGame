@@ -28,7 +28,7 @@ std::wstring removeExtension(const std::wstring& filePath) {
     return fileName;
 }
 
-
+// typingFilePath: DB 파일 목록, filieOptions: 파일 목록에 있는 옵션 담은 구조체, selectMod - 한글/ 영어/ 코딩
 void renderFileList(sf::RenderWindow& window, GameState& game,
     sf::Font& font, int fontSize,
     std::vector<std::wstring> typingFilePath,
@@ -41,6 +41,7 @@ void renderFileList(sf::RenderWindow& window, GameState& game,
     sf::FloatRect typingFileSelectorBounds = fileSelectionPanel.getGlobalBounds();
     sf::Vector2f mpos = getWindowCenterPosition(window, typingFileSelectorBounds);	// 윈도우 가운데 정렬
     fileSelectionPanel.setPosition(mpos);
+
 
     // 정렬의 기준이 될 패널 정보 저장
     typingFileSelectorBounds = fileSelectionPanel.getGlobalBounds();
@@ -141,7 +142,7 @@ void renderFileList(sf::RenderWindow& window, GameState& game,
                     std::cout << "[DEBUG] typingAreaWith: " << game.typingAreaWidth << '\n';
                     game.sentences = wrapAllLinesToPixelWidth(lines, font, game.user.fontSize, game.typingAreaWidth);
                     resetGameResult(game);
-
+                    
                     //initUserInputsAndCorrectMap(game); // 입력값 초기화
 
                     game.currentScene = Scene::TYPING_GAME;

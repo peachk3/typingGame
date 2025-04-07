@@ -1,15 +1,17 @@
-#include "TypingGame.hpp"
+ï»¿#include "TypingGame.hpp"
 #include "DrawUI.hpp"
 #include "UIAlign.hpp"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 
-// --- ·»´õ¸µ ---
+void skipIndentation(GameState& game);
+
+// --- ë Œë”ë§ ---
 void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font, int fontSize)
 {
-    // UI ¹èÄ¡¸¦ À§ÇÑ ÇÁ·¹ÀÓ »ı¼º
-    // À©µµ¿ì Å©±âÀÇ »ç°¢Çü »ı¼º
+    // UI ë°°ì¹˜ë¥¼ ìœ„í•œ í”„ë ˆì„ ìƒì„±
+    // ìœˆë„ìš° í¬ê¸°ì˜ ì‚¬ê°í˜• ìƒì„±
     sf::Vector2f winSizeF(
         static_cast<float>(window.getSize().x),
         static_cast<float>(window.getSize().y)
@@ -29,7 +31,7 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
     typingArea.setOutlineColor(sf::Color::Yellow);
     typingArea.setOutlineThickness(2.f);
 
-    // Á¤·Ä
+    // ì •ë ¬
     sf::Vector2f pfImgSize = pfImg.getSize();
     sf::Vector2f gStateSize = gState.getSize();
     sf::Vector2f typingAreaSize = typingArea.getSize();
@@ -37,7 +39,7 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
     sf::FloatRect typingAreaBounds = typingArea.getGlobalBounds();
     game.typingAreaWidth = typingAreaBounds.size.x;
 
-    // ¿À¸¥ÂÊ ¾Æ·¡ Á¤·Ä
+    // ì˜¤ë¥¸ìª½ ì•„ë˜ ì •ë ¬
     //sf::Vector2f btnSize = loadBtn.getGlobalBounds().size;
     sf::Vector2f typingAreaPos = AlignPosition(
         typingAreaSize,
@@ -47,7 +49,7 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
         60.f, 30.f
     );
 
-    // ¿ŞÂÊ ¾Æ·¡ Á¤·Ä
+    // ì™¼ìª½ ì•„ë˜ ì •ë ¬
     sf::Vector2f gStatePos = AlignPosition(
         gStateSize,
         winRactBounds,
@@ -58,45 +60,45 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
     typingArea.setPosition(typingAreaPos);
     gState.setPosition(gStatePos);
 
-    // gstate °¡¿îµ¥ Á¤·Ä, typingAreaPos ¿Í y ÁÂÇ¥ ¸ÂÃã
+    // gstate ê°€ìš´ë° ì •ë ¬, typingAreaPos ì™€ y ì¢Œí‘œ ë§ì¶¤
     sf::FloatRect s = gState.getGlobalBounds();
     sf::Vector2f pfImgPos = getCenterXPosition(pfImgSize, gState.getGlobalBounds(), typingAreaPos.y);
     pfImg.setPosition(pfImgPos);
 
 
-    // ¹®Àå Ãâ·Â À§Ä¡ ±âÁØ
+    // ë¬¸ì¥ ì¶œë ¥ ìœ„ì¹˜ ê¸°ì¤€
     sf::Vector2f sentenceStartPos = typingAreaPos;
 
-    // ÀÔ·Â ¹ŞÀº ÆÄÀÏ ÃÊ±âÈ­
+    // ì…ë ¥ ë°›ì€ íŒŒì¼ ì´ˆê¸°í™”
     std::vector<std::vector<std::wstring>> displaySentences = game.sentences;
     std::vector<std::vector<std::wstring>> inputSentences = game.userInputs;
 
 
-    // UI ¿ä¼Ò ³Ö±â 
-    // ¹®Àå Ãâ·Â
+    // UI ìš”ì†Œ ë„£ê¸° 
+    // ë¬¸ì¥ ì¶œë ¥
     drawOriginalText(window, game, font, fontSize, sentenceStartPos, displaySentences);
     sentenceStartPos = { sentenceStartPos.x, sentenceStartPos.y + fontSize };
     drawUserInputText(window, game, font, fontSize, sentenceStartPos, inputSentences, displaySentences);
 
 
 
-    // ÀÌ¹ÌÁö
+    // ì´ë¯¸ì§€
     sf::Sprite imgSprite(game.user.profileTexture);
     imgSprite.setPosition(pfImgPos);
 
 
 
-    // °ÔÀÓ »óÅÂ
-    sf::Text playTimeL(font, L"ÁøÇà½Ã°£", 20);
+    // ê²Œì„ ìƒíƒœ
+    sf::Text playTimeL(font, L"ì§„í–‰ì‹œê°„", 20);
     playTimeL.setFillColor(sf::Color::Black);
 
-    sf::Text tpmL(font, L"Å¸¼ö(Å¸/ºĞ)", 20);
+    sf::Text tpmL(font, L"íƒ€ìˆ˜(íƒ€/ë¶„)", 20);
     tpmL.setFillColor(sf::Color::Black);
 
-    sf::Text accuracyL(font, L"Á¤È®µµ(%)", 20);
+    sf::Text accuracyL(font, L"ì •í™•ë„(%)", 20);
     accuracyL.setFillColor(sf::Color::Black);
 
-    sf::Text progressL(font, L"ÁøÇàµµ(%)", 20);
+    sf::Text progressL(font, L"ì§„í–‰ë„(%)", 20);
     progressL.setFillColor(sf::Color::Black);
 
     sf::Text playTimeV(font, L"", 20);
@@ -104,7 +106,7 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
 
     sf::Text tpmV(font, L"", 20);
     tpmV.setFillColor(sf::Color::Black);
-    //tpmV.setString(game.tpm + L"Å¸");
+    //tpmV.setString(game.tpm + L"íƒ€");
 
     sf::Text accuracyV(font, L"", 20);
     accuracyV.setFillColor(sf::Color::Black);
@@ -113,7 +115,7 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
     progressV.setFillColor(sf::Color::Black);
 
 
-    // ÁøÇà½Ã°£
+    // ì§„í–‰ì‹œê°„
     int totalSeconds = static_cast<int>(game.elapsedSeconds);
 
     int minutes = totalSeconds / 60;
@@ -122,45 +124,45 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
     std::wstringstream ss;
     ss << minutes << L":" << std::setw(2) << std::setfill(L'0') << seconds;
 
-    playTimeV.setString(ss.str());  // ¿¹: 01:23
+    playTimeV.setString(ss.str());  // ì˜ˆ: 01:23
     
-    // Å¸¼ö (Á¤¼ö)
-    tpmV.setString(std::to_wstring(static_cast<int>(game.tpm)) + L"Å¸");
+    // íƒ€ìˆ˜ (ì •ìˆ˜)
+    tpmV.setString(std::to_wstring(static_cast<int>(game.tpm)) + L"íƒ€");
 
-    // WPM - ¿µ¾îÀÏ ¶§ ÀÌ°É·Î ¹Ù²Ü±î? 
+    // WPM - ì˜ì–´ì¼ ë•Œ ì´ê±¸ë¡œ ë°”ê¿€ê¹Œ? 
     //{
     //    std::wstringstream ss;
     //    ss << std::fixed << std::setprecision(1) << game.wpm;
     //    wpmV.setString(ss.str());
     //}
 
-// Á¤È®µµ
+// ì •í™•ë„
     {
         std::wstringstream ss;
         ss << std::fixed << std::setprecision(1) << game.accuracy;
         accuracyV.setString(ss.str() + L" %");
     }
 
-    // ÁøÇàµµ
+    // ì§„í–‰ë„
     {
         std::wstringstream ss;
         ss << std::fixed << std::setprecision(1) << game.progress;
         progressV.setString(ss.str() + L" %");
     }
 
-    // ÅØ½ºÆ® ¹èÄ¡
+    // í…ìŠ¤íŠ¸ ë°°ì¹˜
     std::vector<sf::Text*> labels = { &playTimeL, &tpmL, &accuracyL, &progressL };
     std::vector<sf::Text*> values = { &playTimeV, &tpmV, &accuracyV, &progressV };
 
-    float lineHeight = 100.f;        // ÁÙ °£°İ
+    float lineHeight = 100.f;        // ì¤„ ê°„ê²©
 
-    // ¶óº§ ¹èÄ¡ ±âÁØÁ¡
+    // ë¼ë²¨ ë°°ì¹˜ ê¸°ì¤€ì 
     sf::Vector2 standardLPos = playTimeL.getGlobalBounds().size;
-    sf::Vector2f textLPos = AlignPosition(standardLPos, gState.getGlobalBounds(), AlignX::Left, AlignY::Top, 20, 20); // ±âÁØ Á¡ 
+    sf::Vector2f textLPos = AlignPosition(standardLPos, gState.getGlobalBounds(), AlignX::Left, AlignY::Top, 20, 20); // ê¸°ì¤€ ì  
     playTimeL.setPosition(textLPos);
 
 
-    // °ª ¹èÄ¡ ±âÁØÁ¡
+    // ê°’ ë°°ì¹˜ ê¸°ì¤€ì 
     sf::Vector2 standardVPos = playTimeV.getGlobalBounds().size;
     sf::Vector2f textVPos = AlignPosition(standardLPos, gState.getGlobalBounds(), AlignX::Right, AlignY::Top, 15, 20);
 
@@ -173,15 +175,15 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
 
 
 
-    // ÄÁÅ×ÀÌ³Ê draw
+    // ì»¨í…Œì´ë„ˆ draw
     //window.draw(pfImg);
     window.draw(gState);
     window.draw(typingArea);
 
-    // ÀÌ¹ÌÁö draw
+    // ì´ë¯¸ì§€ draw
     window.draw(imgSprite);
 
-    // ÅØ½ºÆ® ¶óº§ draw
+    // í…ìŠ¤íŠ¸ ë¼ë²¨ draw
     for (std::size_t i = 0; i < labels.size(); ++i) {
         window.draw(*labels[i]);
         window.draw(*values[i]);
@@ -203,10 +205,10 @@ void drawUserInputText(sf::RenderWindow& window, const GameState& game,
     float letterSpacing = 0.f;
     if (game.bHangle)
     {
-        letterSpacing = fontSize * 0.90f; // ÇÑ±Û
+        letterSpacing = fontSize * 0.90f; // í•œê¸€
     }
     else {
-        letterSpacing = fontSize * 0.50f;
+        letterSpacing = fontSize * 0.55f;
     }
 
 
@@ -215,7 +217,7 @@ void drawUserInputText(sf::RenderWindow& window, const GameState& game,
         for (size_t j = 0; j < userInputs[i].size(); ++j)
         {
             std::wstring& inputLine = userInputs[i][j];
-            std::wstring& targetLine = sentences[i][j];  // target ¹®Àå
+            std::wstring& targetLine = sentences[i][j];  // target ë¬¸ì¥
             for (size_t k = 0; k < inputLine.size(); ++k)
             {
                 sf::Text inputText(font, inputLine.substr(k, 1), fontSize);
@@ -227,18 +229,31 @@ void drawUserInputText(sf::RenderWindow& window, const GameState& game,
                 window.draw(inputText);
             }
 
-            // Ä¿¼­ À§Ä¡ Ç¥½Ã
-            if (i == game.curPara && j == game.curLine) {
-                sf::Text cursorText(font, L"_", fontSize); // ¶Ç´Â L"_"
-                cursorText.setFillColor(sf::Color::Blue);
-                cursorText.setPosition({ startX + game.curChar * letterSpacing, startY + (fontSize * (i + 1)) + 10.f });
+            // ì»¤ì„œ ìœ„ì¹˜ í‘œì‹œ
+            if (i == game.curPara && j == game.curLine && game.showCursor) {
+                //sf::Text cursorText(font, L"_", fontSize); // ë˜ëŠ” L"_"
+                //cursorText.setFillColor(sf::Color::Blue);
+                //cursorText.setPosition({ startX + game.curChar * letterSpacing, startY + (fontSize * (i + 1)) + 10.f });
 
-                window.draw(cursorText);
+
+                //window.draw(cursorText);
+                sf::Vector2f cursorPos= { startX + game.curChar * letterSpacing, startY + (fontSize * (i + 1)) + 10.f };
+
+
+                // ì‚¬ê°í˜• ê¹œë¹¡ì´ëŠ” ì»¤ì„œ ë§Œë“¤ê¸°
+                sf::RectangleShape cursorBlock;
+                cursorBlock.setSize({ letterSpacing, fontSize * 1.1f });
+                cursorBlock.setPosition(cursorPos);
+                cursorBlock.setFillColor(sf::Color(0, 120, 255, 150)); // ë°˜íˆ¬ëª… íŒŒë‘
+
+                
+                window.draw(cursorBlock);
+                
             }
 
 
 
-            startY += fontSize * 4; // ÁÙ °£°İ ¼³Á¤
+            startY += fontSize * 4; // ì¤„ ê°„ê²© ì„¤ì •
         }
     }
 }
@@ -247,23 +262,23 @@ void drawOriginalText(sf::RenderWindow& window,
     const GameState& game, const sf::Font& font, int fontSize, sf::Vector2f standardPos,
     std::vector<std::vector<std::wstring>>& displaySentences)
 {
-    float startX = standardPos.x + 20.f;        // ³ë¶õ ¿µ¿ª ÆĞµù 20
-    float startY = standardPos.y;               // ³ë¶õ ¿µ¿ª ÆĞµù 20
+    float startX = standardPos.x + 20.f;        // ë…¸ë€ ì˜ì—­ íŒ¨ë”© 20
+    float startY = standardPos.y;               
 
     float x = 30.f;
-    float y = 50.f; // y¸¦ ´©ÀûÇØ¼­ ÁÙ °£°İ ÁÖ±â
-    float letterSpacing = fontSize * 0.90f;  // ÇÑ±Û, ¿µ¾îÀÏ ¶§ ¹®ÀÚ °£°İ ¼³Á¤
+    float y = 50.f; // yë¥¼ ëˆ„ì í•´ì„œ ì¤„ ê°„ê²© ì£¼ê¸°
+    float letterSpacing = 0.f;  // í•œê¸€, ì˜ì–´ì¼ ë•Œ ë¬¸ì ê°„ê²© ì„¤ì •
     //std::vector<std::vector<std::wstring>> displaySentences = game.sentences;
 
     if (game.bHangle)
     {
-        letterSpacing = fontSize * 0.90f; // ÇÑ±Û
+        letterSpacing = fontSize * 0.90f; // í•œê¸€
     }
     else {
-        letterSpacing = fontSize * 0.50f;
+        letterSpacing = fontSize * 0.55f;
     }
 
-    // ÇÑ ±ÛÀÚ¾¿ ÀÔ·Â
+    // í•œ ê¸€ìì”© ì…ë ¥
     for (int i = 0; i < displaySentences.size(); ++i)
     {
         for (size_t j = 0; j < displaySentences[i].size(); ++j)
@@ -282,15 +297,22 @@ void drawOriginalText(sf::RenderWindow& window,
                 window.draw(oneChar);
             }
 
-            startY += fontSize * 4; // ÁÙ °£°İ ¼³Á¤
+            startY += fontSize * 4; // ì¤„ ê°„ê²© ì„¤ì •
 
         }
     }
 }
 
+void updateGame(GameState& game)
+{
+    if (game.cursorTimer.getElapsedTime().asMilliseconds() > 500) {
+        game.showCursor = !game.showCursor;
+        game.cursorTimer.restart();
+    }
 
+}
 
-// --- ·ÎÁ÷ ---
+// --- ë¡œì§ ---
 void updateTypingStats(GameState& game, float elapsedSeconds)
 {
     int correctCount = 0;
@@ -313,20 +335,20 @@ void updateTypingStats(GameState& game, float elapsedSeconds)
 
     
 
-    // Á¤È®µµ °è»ê
+    // ì •í™•ë„ ê³„ì‚°
     game.accuracy = (totalInputChars > 0)
         ? static_cast<float>(correctCount) / totalInputChars * 100.f
         : 100.f;
-    // Tpm °è»ê
+    // Tpm ê³„ì‚°
     float elapsedMinutes = elapsedSeconds / 60.f;
     game.tpm = (elapsedMinutes > 0)
         ? static_cast<float>(totalInputChars) / elapsedMinutes
         : 0.f;
-    // Wpm °è»ê
+    // Wpm ê³„ì‚°
     game.wpm = (elapsedMinutes > 0)
         ? (static_cast<float>(totalInputChars) / 5.f) / elapsedMinutes
         : 0.f;
-    // ÁøÇàµµ (%)
+    // ì§„í–‰ë„ (%)
     game.progress = (totalTargetChars > 0)
         ? static_cast<float>(totalInputChars) / totalTargetChars * 100.f
         : 0.f;
@@ -346,7 +368,7 @@ void moveToNextLineOrParagraph(GameState& game) {
         game.curChar = 0;
     }
     else {
-        std::wcout << L"[DEBUG] ¸¶Áö¸· ¹®Àå ÀÔ·Â ¿Ï·á! °á°ú È­¸éÀ¸·Î ³Ñ¾î°¥ ÁØºñ." << std::endl;
+        std::wcout << L"[DEBUG] ë§ˆì§€ë§‰ ë¬¸ì¥ ì…ë ¥ ì™„ë£Œ! ê²°ê³¼ í™”ë©´ìœ¼ë¡œ ë„˜ì–´ê°ˆ ì¤€ë¹„." << std::endl;
         updateTypingStats(game, game.elapsedSeconds);
         game.result.gamePlayTime = game.elapsedSeconds;
         game.result.avgTpm = game.tpm;
@@ -375,7 +397,7 @@ void initUserInputsAndCorrectMap(GameState& game) {
 }
 
 void resetGameResult(GameState& game) {
-    game.result = GameResult();  // ±âº»°ªÀ¸·Î ÃÊ±âÈ­
+    game.result = GameResult();  // ê¸°ë³¸ê°’ìœ¼ë¡œ ì´ˆê¸°í™”
 
     game.curPara = 0;
     game.curLine = 0;
@@ -394,13 +416,13 @@ void resetGameResult(GameState& game) {
     game.started = false;
 }
 
-// --- ÀÔ·Â Ã³¸® ---
+// --- ì…ë ¥ ì²˜ë¦¬ ---
 void handleInputGame(GameState& game, const sf::Event& event)
 {
     if (game.currentScene == Scene::TYPING_GAME)
     {
 
-        // ÀÏ¹İ ÅØ½ºÆ® ÀÔ·Â
+        // ì¼ë°˜ í…ìŠ¤íŠ¸ ì…ë ¥
         if (event.is<sf::Event::TextEntered>())
         {
             int p = game.curPara;
@@ -413,9 +435,13 @@ void handleInputGame(GameState& game, const sf::Event& event)
             const auto& inputEvent = event.getIf<sf::Event::TextEntered>();
             if (!inputEvent) return;
 
+            if (game.curChar == 0 && inputLine.empty()) {
+                skipIndentation(game);
+            }
+
             wchar_t inputChar = static_cast<wchar_t>(inputEvent->unicode);
 
-            // ¹é½ºÆäÀÌ½º Ã³¸®
+            // ë°±ìŠ¤í˜ì´ìŠ¤ ì²˜ë¦¬
             if (inputChar == 8)
             {
                 printCorrectLineDebug(correctLine);
@@ -427,34 +453,37 @@ void handleInputGame(GameState& game, const sf::Event& event)
                 }
             }
 
-            // ÀÏ¹İ ÀÔ·Â Ã³¸®
+            
+            // ì¼ë°˜ ì…ë ¥ ì²˜ë¦¬
             else if (inputChar >= 32 && inputChar != 127)
             {
-
-                // ½ºÆäÀÌ½º Ã³¸® - ¹®ÀåÀÇ ³¡¿¡ ¿ÔÀ» ¶§ ½ºÆäÀÌ½º Ã³¸® ÇØ¼­ °³Çà °¡´ÉÇÏµµ·Ï
+ 
+                // ìŠ¤í˜ì´ìŠ¤ ì²˜ë¦¬ - ë¬¸ì¥ì˜ ëì— ì™”ì„ ë•Œ ìŠ¤í˜ì´ìŠ¤ ì²˜ë¦¬ í•´ì„œ ê°œí–‰ ê°€ëŠ¥í•˜ë„ë¡
                 if (inputChar == 32 && inputLine == targetLine) {
                     moveToNextLineOrParagraph(game);
                     return;
                 }
 
+                // ì…ë ¥ ê¸¸ì´ ì´ˆê³¼ ë°©ì§€
                 if (inputLine.length() >= targetLine.length()) {
-                    std::wcout << L"[DEBUG] ´õ ÀÌ»ó ÀÔ·ÂÇÒ ¼ö ¾ø½À´Ï´Ù." << std::endl;
+                    std::wcout << L"[DEBUG] ë” ì´ìƒ ì…ë ¥í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤." << std::endl;
                     return;
                 }
 
-                //game.userInputs[game.curPara][game.curLine].insert(game.curChar, 1, inputChar);
+                // ì‚¬ìš©ìê°€ ì‹¤ì œë¡œ ì…ë ¥í•œ ë¬¸ì ì²˜ë¦¬
                 inputLine.insert(game.curChar, 1, inputChar);
 
-                // Á¤È®µµ Ã¼Å©ÇØ¼­ correctMap °»½Å
+                // ì •í™•ë„ ì²´í¬í•´ì„œ correctMap ê°±ì‹ 
                 bool isCorrect = (game.curChar < targetLine.size() && inputChar == targetLine[game.curChar]);
                 correctLine.insert(correctLine.begin() + game.curChar, isCorrect);
 
                 game.curChar++;
                 game.totalKeyPress++;
+                
             }
         }
 
-        // Å°º¸µå Å° ÀÔ·Â (¿£ÅÍ, Esc.?<- ´Â ³ªÁß¿¡ ¤¾)
+        // í‚¤ë³´ë“œ í‚¤ ì…ë ¥ (ì—”í„°, Esc.?<- ëŠ” ë‚˜ì¤‘ì— ã…)
         if (event.is<sf::Event::KeyPressed>())
         {
 
@@ -468,23 +497,23 @@ void handleInputGame(GameState& game, const sf::Event& event)
                 std::wstring& targetLine = game.sentences[p][l];
 
 
-                // µğ¹ö±× ·Î±×
-                printWStringInfo(L"ÀÔ·ÂÇÑ ¹®ÀÚ¿­", inputLine);
-                printWStringInfo(L"Á¤´ä ¹®ÀÚ¿­", targetLine);
+                // ë””ë²„ê·¸ ë¡œê·¸
+                printWStringInfo(L"ì…ë ¥í•œ ë¬¸ìì—´", inputLine);
+                printWStringInfo(L"ì •ë‹µ ë¬¸ìì—´", targetLine);
 
                 if (inputLine == targetLine) {
-                    std::wcout << L"[DEBUG] ÀÏÄ¡ÇÕ´Ï´Ù " << std::endl;
+                    std::wcout << L"[DEBUG] ì¼ì¹˜í•©ë‹ˆë‹¤ " << std::endl;
                 }
                 else {
-                    std::wcout << L"[DEBUG] ´Ù¸¨´Ï´Ù " << std::endl;
+                    std::wcout << L"[DEBUG] ë‹¤ë¦…ë‹ˆë‹¤ " << std::endl;
                 }
 
                 if (inputLine == targetLine) {
-                    // ÀÔ·ÂÀÌ Á¤´ä°ú °°À» ¶§¸¸ ÁÙ ÀÌµ¿
+                    // ì…ë ¥ì´ ì •ë‹µê³¼ ê°™ì„ ë•Œë§Œ ì¤„ ì´ë™
                     moveToNextLineOrParagraph(game);
                 }
                 else {
-                    std::wcout << L"[DEBUG] Æ²·Á¼­ ¾È³Ñ¾î°¨ ¤µ¤¡" << std::endl;
+                    std::wcout << L"[DEBUG] í‹€ë ¤ì„œ ì•ˆë„˜ì–´ê° ã……ã„±" << std::endl;
                 }
             }
 
@@ -493,7 +522,7 @@ void handleInputGame(GameState& game, const sf::Event& event)
     }
 }
 
-// --- µğ¹ö±ë ÇÔ¼ö ---
+// --- ë””ë²„ê¹… í•¨ìˆ˜ ---
 void printWStringInfo(const std::wstring& name, const std::wstring& str) {
     std::wcout << L"[" << name << L"] length = " << str.size() << L"\n";
 
@@ -504,11 +533,34 @@ void printWStringInfo(const std::wstring& name, const std::wstring& str) {
             << static_cast<int>(ch) << L")\n";
     }
 }
-// correctMap µğ¹ö±ë
+
+// correctMap ë””ë²„ê¹…
 void printCorrectLineDebug(const std::vector<bool>& correctLine) {
-    std::wcout << L"[DEBUG] correctLine »óÅÂ: ";
+    std::wcout << L"[DEBUG] correctLine ìƒíƒœ: ";
     for (bool b : correctLine) {
         std::wcout << (b ? L"t " : L"f ");
     }
     std::wcout << std::endl;
+}
+
+
+// ë“¤ì—¬ì“°ê¸° ê±´ë„ˆë›°ëŠ” í•¨ìˆ˜
+void skipIndentation(GameState& game)
+{
+    int p = game.curPara;
+    int l = game.curLine;
+    std::wstring& targetLine = game.sentences[p][l];
+    std::wstring& inputLine = game.userInputs[p][l];
+    std::vector<bool>& correctLine = game.correctMap[p][l];
+
+    // ì´ë¯¸ ì²˜ë¦¬ëœ ê²½ìš° ì¬ì§„ì… ë°©ì§€
+    if (!inputLine.empty()) return;
+
+    while (game.curChar < targetLine.length() &&
+        (targetLine[game.curChar] == L' ' || targetLine[game.curChar] == L'\t'))
+    {
+        inputLine += targetLine[game.curChar];
+        correctLine.push_back(true); // ë“¤ì—¬ì“°ê¸°ëŠ” ë¬´ì¡°ê±´ ì •ë‹µ ì²˜ë¦¬
+        game.curChar++;
+    }
 }

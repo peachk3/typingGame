@@ -5,20 +5,6 @@
 #include <string>
 #include <functional>
 
-// UI 상태를 나타내기 위한 구조체
-enum class UIState {
-	ProfileMain,
-	ImageSelect,
-	fileListShow,
-	TypingGame
-};
-
-// 사진 이미지 저장을 위한 구조체
-struct ImageOption {
-	sf::Image image;
-	sf::Texture texture;
-	std::function<void()> onClick;
-};
 
 
 // 윈도우 비율로 사각형 생성
