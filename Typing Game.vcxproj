@@ -70,6 +70,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Program Files %28x86%29\mysql-connector-c++-9.2.0-winx64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\mysql-connector-c++-9.2.0-winx64\lib64;C:\Program Files %28x86%29\mysql-connector-c++-9.2.0-winx64\lib64\debug\vs14;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -104,10 +108,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\mysql-connector-c++-9.2.0-winx64\include;C:\source\miniproject-2025\Merge\typingGame\SFML\include;C:\Program Files %28x86%29\mysql-connector-c++-9.2.0-winx64\include\jdbc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\source\miniproject-2025\Merge\typingGame\SFML\lib;C:\Program Files %28x86%29\mysql-connector-c++-9.2.0-winx64\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mysqlcppconn.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,7 +135,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="DrawUI.cpp" />
+    <ClCompile Include="DrawUIR.cpp" />
+    <ClCompile Include="FileLoader.cpp" />
+    <ClCompile Include="FileSelectList.cpp" />
+    <ClCompile Include="main.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files %28x86%29\mysql-connector-c++-9.2.0-winx64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="merge.cpp" />
+    <ClCompile Include="ResultScreen.cpp" />
+    <ClCompile Include="saveGameLog.cpp" />
+    <ClCompile Include="TextUtil.cpp" />
+    <ClCompile Include="TypingGame.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DrawUI.hpp" />
+    <ClInclude Include="DrawUIR.hpp" />
+    <ClInclude Include="FileLoader.hpp" />
+    <ClInclude Include="FileSelectList.hpp" />
+    <ClInclude Include="gameManager.h" />
+    <ClInclude Include="GameState.hpp" />
+    <ClInclude Include="LoginUI.hpp" />
+    <ClInclude Include="networkManager.h" />
+    <ClInclude Include="RankingUI.hpp" />
+    <ClInclude Include="ResultScreen.hpp" />
+    <ClInclude Include="saveGameLog.h" />
+    <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="TextUtil.hpp" />
+    <ClInclude Include="TypingGame.hpp" />
+    <ClInclude Include="UIAlign.hpp" />
+    <ClInclude Include="UIManager.hpp" />
+    <ClInclude Include="userManager.hpp" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
