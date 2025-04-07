@@ -29,6 +29,8 @@
 #include "ResultScreen.hpp"
 #include "DrawUIR.hpp"
 #include "FileSelectList.hpp"
+#include "UserProfileUI.hpp"
+#include "UserProfileSelectUI.hpp"
 #include <iomanip>  // std::hex, std::setw
 #include <codecvt>  // wide → utf8 변환 (선택)
 
@@ -77,9 +79,6 @@ int main() {
     //game.user.id = L"test_user_001";
     game.user.nickname = L"타자마스터";
     game.user.profileImagePath = L"assets/profile_img/default_avatar.png";
-
-    sf::Image img = loadImg(game.user.profileImagePath);
-    game.user.profileTexture = sf::Texture(resizeImageKeepAspect(img));
 
     int fontSize = game.user.fontSize;
 
@@ -181,12 +180,12 @@ int main() {
         codeJavaButtonTexture, codeCppButtonTexture, codePyButtonTexture, fileSelectTexture;
 
     // 배경 이미지 로드
-    if (!ui.loadTexture("background", "./assets/image/bgimg.png")) {
+    if (!ui.loadTexture("background", "./assets/image/backGround.png")) {
 
         return -1;
     }
 
-    ui.loadTexture("background", "./assets/image/bgimg.png");
+    ui.loadTexture("background", "./assets/image/backGround.png");
     sf::Sprite backGroundSprite = ui.createSprite("background", { 0, 0 }, { MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT }); \
         //backGroundSprite.setPosition(Vector2f(0.f, 0.f));
 
@@ -316,29 +315,29 @@ int main() {
     checkMark.setString("");
     // -----------------
     // 텍스처 로딩
-    if (!ui.loadTexture("codeJavaButton", "./assets/image/blueButton.png")) return -1;
-    if (!ui.loadTexture("codeCppButton", "./assets/image/blueButton2.png")) return -1;
-    if (!ui.loadTexture("codePyButton", "./assets/image/blueButton3.png")) return -1;
+    if (!ui.loadTexture("codeJavaButton", "./assets/image/javaButton.png")) return -1;
+    if (!ui.loadTexture("codeCppButton", "./assets/image/cppButton.png")) return -1;
+    if (!ui.loadTexture("codePyButton", "./assets/image/pyButton.png")) return -1;
     if (!ui.loadTexture("fileSelectButton", "./assets/image/bluebutton4.png")) return -1;
 
     // 버튼 공통 스케일
-    sf::Vector2f buttonScale(150.f, 80.f);
+    sf::Vector2f buttonScale(180.f, 120.f);
     sf::Vector2f fileButtonScale(100.f, 60.f);
 
     // Java 버튼
-    sf::Sprite codeJavaButtonSprite = ui.createSprite("codeJavaButton", { MAIN_WINDOW_WIDTH / 3 - 200 , MAIN_WINDOW_HEIGHT / 2 - 70 }, buttonScale);
-    sf::Text javaButtonText = ui.createText(L"Java", 35, { 150.f, 300.f }, sf::Color::Black);
-    ui.centerTextOnSprite(codeJavaButtonSprite, javaButtonText);
+    sf::Sprite codeJavaButtonSprite = ui.createSprite("codeJavaButton", { MAIN_WINDOW_WIDTH / 3 - 150 , MAIN_WINDOW_HEIGHT / 2 - 70 }, buttonScale);
+    //sf::Text javaButtonText = ui.createText(L"Java", 35, { 150.f, 300.f }, sf::Color::Black);
+    //ui.centerTextOnSprite(codeJavaButtonSprite, javaButtonText);
 
     // C++ 버튼
     sf::Sprite codeCppButtonSprite = ui.createSprite("codeCppButton", { MAIN_WINDOW_WIDTH / 3 + 100 , MAIN_WINDOW_HEIGHT / 2 - 70 }, buttonScale);
-    sf::Text cppButtonText = ui.createText(L"C++", 35, { 450.f, 300.f }, sf::Color::Black);
-    ui.centerTextOnSprite(codeCppButtonSprite, cppButtonText);
+ /*   sf::Text cppButtonText = ui.createText(L"C++", 35, { 450.f, 300.f }, sf::Color::Black);
+    ui.centerTextOnSprite(codeCppButtonSprite, cppButtonText);*/
 
     // Python 버튼
-    sf::Sprite codePyButtonSprite = ui.createSprite("codePyButton", { MAIN_WINDOW_WIDTH / 3 + 400 , MAIN_WINDOW_HEIGHT / 2 - 70 }, buttonScale);
-    sf::Text pyButtonText = ui.createText(L"Python", 35, { 750.f, 300.f }, sf::Color::Black);
-    ui.centerTextOnSprite(codePyButtonSprite, pyButtonText);
+    sf::Sprite codePyButtonSprite = ui.createSprite("codePyButton", { MAIN_WINDOW_WIDTH / 3 + 350 , MAIN_WINDOW_HEIGHT / 2 - 70 }, buttonScale);
+    //sf::Text pyButtonText = ui.createText(L"Python", 35, { 750.f, 300.f }, sf::Color::Black);
+    //ui.centerTextOnSprite(codePyButtonSprite, pyButtonText);
 
     // 파일 선택 버튼
     sf::Sprite fileSelectSprite = ui.createSprite("fileSelectButton", { MAIN_WINDOW_WIDTH - 150, MAIN_WINDOW_HEIGHT - 120 }, fileButtonScale);
@@ -353,6 +352,23 @@ int main() {
         return 0;  // 사용자가 창을 닫은 경우 종료
     }
 
+    // 추가 할 것들
+    std::vector<sf::Sprite> sprites;
+    std::vector<ImageOption> imageOptions;
+    std::vector<sf::Text> profileTexts;
+
+    // 프로필 선택 hover 효과
+    sf::RectangleShape thumbnailHoverOutline;
+    thumbnailHoverOutline.setSize({ 200, 200 }); // 썸네일 크기에 맞게
+    thumbnailHoverOutline.setFillColor(sf::Color::Transparent);
+    thumbnailHoverOutline.setOutlineColor(sf::Color::Red);
+    thumbnailHoverOutline.setOutlineThickness(4.f);
+
+    // 기본 프로필 이미지 로드
+    sf::Image img = loadImg(game.user.profileImagePath);
+    game.user.profileTexture = sf::Texture(resizeImageKeepAspect(img));
+    sf::Sprite userImage(game.user.profileTexture);
+
     // 메인 게임 루프
     while (gameWindow.isOpen()) {
         float deltaTime = 1.f / 60.f;
@@ -365,6 +381,69 @@ int main() {
                 gameWindow.close();
 
             switch (game.currentScene) {
+            case Scene::PROFILE: {
+                if (const auto* mouse = event->getIf<sf::Event::MouseButtonPressed>()) {
+                    if (mouse->button == sf::Mouse::Button::Left) {
+                        std::wcout << sprites.size() << std::endl;
+                        if (game.showImageOverlay) {
+                            for (int i = 0; i < sprites.size(); ++i) {
+                                if (sprites[i].getGlobalBounds().contains(worldPos)) {
+                                    std::wcout << L"[debug!!]" << std::endl;
+
+                                    imageOptions[i].onClick();
+
+                                }
+                            }
+
+                            // 불러오기 버튼 클릭 확인
+                            if (game.btn.loadImgBtnBounds.contains(worldPos)) {
+                                std::wcout << L"[불러오기 버튼 클릭됨]" << std::endl;
+                                auto originalPath = std::filesystem::current_path();	// 현재 폴더 경로 저장
+                                std::wstring selectedImagePath = openImageFileDialog();
+
+                                std::filesystem::current_path(originalPath);  // 다시 원래 경로로 되돌림 - 선택된 폴더 경로로 바뀌는 거 방지
+                                sf::Image image;
+                                if (image.loadFromFile(selectedImagePath)) {
+                                    // 성공 처리
+                                    std::wcout << L"[이미지를 성공적으로 불러왔습니다]" << std::endl;
+                                    std::wcout << selectedImagePath << std::endl;
+                                    game.user.profileImagePath = selectedImagePath;
+                                    updateProfileImage(selectedImagePath, game, userImage);
+                                    game.showImageOverlay = false;
+                                    game.currentScene = Scene::PROFILE;
+
+
+                                }
+                                else {
+                                    std::wcout << L"[이미지를 불러오지 못했습니다]" << std::endl;
+                                    return -1;
+                                }
+
+                            }   // HOVER 이벤트
+
+                        }
+                        if (game.btn.selectImgBtnBounds.contains(worldPos)) {
+                            game.showImageOverlay = true;
+                            std::cout << 1 << std::endl;
+                        }
+                    }
+                }
+                else if (const auto* move = event->getIf<sf::Event::MouseMoved>()) {
+                    sf::Vector2f mousePos = gameWindow.mapPixelToCoords(move->position);
+                    game.bHoveringThumbnail = false;
+
+                    for (int i = 0; i < sprites.size(); ++i) {
+                        if (sprites[i].getGlobalBounds().contains(mousePos)) {
+                            sf::FloatRect bounds = sprites[i].getGlobalBounds();
+                            thumbnailHoverOutline.setPosition(bounds.position);
+                            thumbnailHoverOutline.setSize(bounds.size);
+                            game.bHoveringThumbnail = true;
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
             case Scene::LOGIN: {
                 std::wcout << L"[DEBUG] 현재 Scene: " << static_cast<int>(game.currentScene) << std::endl;
                 if (event->is<Event::MouseButtonPressed>()) {
@@ -422,7 +501,7 @@ int main() {
                 }
                 break;
             }
-            case Scene::SIGN_UP: {
+            case Scene::SIGNUP: {
                 if (event->is<Event::MouseButtonPressed>()) {
                     Vector2f mousePos = Vector2f(Mouse::getPosition(signupWindow));
 
@@ -537,11 +616,13 @@ int main() {
                     // 한글 타자 연습
                     if (korButtonSprite.getGlobalBounds().contains(Vector2f(mousePos.x, mousePos.y))) {
                         std::wcout << L"한글 타자 연습 시작!" << endl;
-                        game.currentScene = Scene::FILE_SELECT;
+                        //game.currentScene = Scene::FILE_SELECT;
                         fileOptions.clear();
                         selectMod = L"한글";
                         game.bHangle = true;
+                        game.currentScene = Scene::PROFILE;
                     }
+
 
                     // 영어 모드
                     else if (engButtonSprite.getGlobalBounds().contains(Vector2f(mousePos.x, mousePos.y))) {
@@ -692,11 +773,18 @@ int main() {
                 break;
             }
             case Scene::TYPING_GAME:
+            {
                 // Scene별 입력 처리
                 handleInputGame(game, *event);
                 break;
             }
+            }
 
+        }
+
+        // HOVER 효과
+        if (game.currentScene == Scene::FILE_SELECT) {
+            hoverText(game, fileOptions, worldPos);
         }
 
         gameWindow.clear(Color::White);
@@ -705,6 +793,15 @@ int main() {
         // 렌더링
         switch (game.currentScene)
         {
+        case Scene::PROFILE: {
+            renderProfile(gameWindow, game, font, fontSize, userImage, profileTexts);
+
+            if (game.showImageOverlay) {
+                renderSelectImage(gameWindow, game, font, imageOptions, sprites, userImage, thumbnailHoverOutline);  // 프로필 이미지 선택 화면 겹쳐서 그림
+            }
+            break;
+        }
+
         case Scene::LOGIN: {
             cursorTimer += deltaTime;
             if (cursorTimer >= cursorBlinkRate) {
@@ -739,7 +836,7 @@ int main() {
             gameWindow.display();
             break;
         }
-        case Scene::SIGN_UP: {
+        case Scene::SIGNUP: {
             // 커서 깜빡이기
             cursorTimer += deltaTime;
             if (cursorTimer >= cursorBlinkRate) {
@@ -810,11 +907,11 @@ int main() {
                 gameWindow.draw(backGroundSprite); // 배경 표시
                 gameWindow.draw(whiteBackground); // 흰색 배경
                 gameWindow.draw(codeJavaButtonSprite); // Java 버튼
-                gameWindow.draw(javaButtonText);
+                //gameWindow.draw(javaButtonText);
                 gameWindow.draw(codeCppButtonSprite); // C++ 버튼
-                gameWindow.draw(cppButtonText);
+                //gameWindow.draw(cppButtonText);
                 gameWindow.draw(codePyButtonSprite); // Python 버튼
-                gameWindow.draw(pyButtonText);
+                //gameWindow.draw(pyButtonText);
                 gameWindow.draw(fileSelectSprite); // 파일 선택 버튼
                 gameWindow.draw(fileSelectText);
 

@@ -16,7 +16,7 @@ std::vector<std::wstring> splitStrtoVector(std::wstring contents)
         line.erase(std::remove(line.begin(), line.end(), L'\r'), line.end());
         line.erase(std::remove(line.begin(), line.end(), L'\t'), line.end());
 
-        line = trim(line);
+        //line = trim(line);
 
         // Æ¯¼ö ¹®ÀÚ Á¦°Å
         line = removeUninputtableCharacters(line);
@@ -24,7 +24,7 @@ std::vector<std::wstring> splitStrtoVector(std::wstring contents)
         if (!line.empty()) {
             lines.push_back(line);
         }
-           
+
     }
     return lines;
 
@@ -75,7 +75,7 @@ std::vector<std::vector<std::wstring>> wrapAllLinesToPixelWidth(
 }
 // °ø¹éÁ¦°Å ÇÔ¼ö
 std::wstring trim(const std::wstring& str) {
-    const std::wstring whitespace = L" \n\r\t";
+    const std::wstring whitespace = L" \n\r";
 
     size_t start = str.find_first_not_of(whitespace);
     size_t end = str.find_last_not_of(whitespace);
@@ -87,11 +87,15 @@ std::wstring trim(const std::wstring& str) {
 }
 
 bool isKeyboardInputChar(wchar_t ch) {
+    //// ÅÇ Çã¿ë
+    //if (ch == L'\t')
+    //    return true;
+
     // ASCII ÀÔ·Â °¡´É ¹®ÀÚ
     if (ch >= 0x20 && ch <= 0x7E)
         return true;
 
-    // ¿Ï¼ºÇü ÇÑ±Û (°¡~ÆR)
+    // ¿Ï¼ºÇü ÇÑ±Û (°¡~R)
     if (ch >= 0xAC00 && ch <= 0xD7A3)
         return true;
 

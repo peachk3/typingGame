@@ -23,6 +23,7 @@ void renderFileList(sf::RenderWindow& window, GameState& game,
     std::vector<FileOption>& filieOptions,
     std::wstring selectMod);
 
+
 // 파일 클릭 이벤트 처리
 void handleFileClick(GameState& game, const sf::Event& event, sf::Vector2f& mousePos, std::vector<FileOption>& fileOptions, sf::Font& font);
 

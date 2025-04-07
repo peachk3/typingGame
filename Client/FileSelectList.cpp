@@ -28,15 +28,13 @@ std::wstring removeExtension(const std::wstring& filePath) {
     return fileName;
 }
 
-
+// typingFilePath: DB 파일 목록, filieOptions: 파일 목록에 있는 옵션 담은 구조체, selectMod - 한글/ 영어/ 코딩
 void renderFileList(sf::RenderWindow& window, GameState& game,
     sf::Font& font, int fontSize,
     std::vector<std::wstring> typingFilePath,
     std::vector<FileOption>& filieOptions,
     std::wstring selectMod)						// 한글 / 영여 / 코딩)
 {
-    filieOptions.clear();
-
     // 파일 선택 UI 창
     sf::RectangleShape fileSelectionPanel = makeRectangleR(window, 0.45f, 0.8f, sf::Color::White, sf::Color::Black, 2.f);
     //fileSelectionPanel.setFillColor(sf::Color::White);
@@ -44,24 +42,22 @@ void renderFileList(sf::RenderWindow& window, GameState& game,
     sf::Vector2f mpos = getWindowCenterPosition(window, typingFileSelectorBounds);	// 윈도우 가운데 정렬
     fileSelectionPanel.setPosition(mpos);
 
+
     // 정렬의 기준이 될 패널 정보 저장
     typingFileSelectorBounds = fileSelectionPanel.getGlobalBounds();
 
 
     // 제목
     std::wstring listTitle = selectMod + L" 연습";
-    sf::Text titleplease(font, listTitle, 45);
-    titleplease.setFillColor(sf::Color::Black);
-
-    sf::FloatRect titleBounds = titleplease.getGlobalBounds();
-
+    sf::Text title(font, listTitle, 45);
+    title.setFillColor(sf::Color::Black);
+    sf::FloatRect titleBounds = title.getGlobalBounds();
     sf::Vector2f titlePos = getWindowCenterPosition(window, titleBounds);
-    titleplease.setPosition({ titlePos.x, mpos.y + 10.f });
+    title.setPosition({ titlePos.x, mpos.y + 10.f });
 
     // 목록을 담을 컨테이너
     sf::RectangleShape listContainer = makeRectangle(typingFileSelectorBounds, 0.7f, 0.7f, sf::Color::Red);
     sf::FloatRect listContainerBounds = listContainer.getGlobalBounds();
-
 
     sf::Vector2f listContainerPos = getWindowCenterPosition(window, listContainerBounds);
     listContainer.setPosition(listContainerPos);
@@ -96,7 +92,6 @@ void renderFileList(sf::RenderWindow& window, GameState& game,
     sf::FloatRect loadBtnBounds = loadBtn.getGlobalBounds();
     game.btn.loadBtnBounds = loadBtnBounds;
 
-
     // 버튼 텍스트
     sf::Text btnText(font, L"불러오기", 18);
     btnText.setFillColor(sf::Color::Black);
@@ -115,16 +110,12 @@ void renderFileList(sf::RenderWindow& window, GameState& game,
     maxScrollOffset = std::max(0.f, totalHeight - visibleHeight);*/
 
     int fileCount = typingFilePath.size();
-    std::cout << "5" << std::endl;
-
     //filieOptions.clear();
     if (filieOptions.empty()) {
         for (int i = 0; i < fileCount; i++)
         {
             // 구조체 초기화
             FileOption option;
-            //std::cout << "6" << std::endl;
-
             //option.fileName = L"";
             option.filePath = typingFilePath[i];
             std::wstring thisPath = typingFilePath[i];
@@ -168,18 +159,21 @@ void renderFileList(sf::RenderWindow& window, GameState& game,
 
     window.draw(fileSelectionPanel);
     for (auto& option : filieOptions) window.draw(*option.label);
-    window.draw(titleplease);
+    window.draw(title);
     window.draw(listContainer);
 
 
     window.draw(loadBtn);
     window.draw(btnText);
 
+
 }
 
 // 파일 클릭 이벤트 처리
 void handleFileClick(GameState& game, const sf::Event& event, sf::Vector2f& mousePos, std::vector<FileOption>& fileOptions, sf::Font& font)
 {
+
+
     // 일반 텍스트 입력
     if (event.is<sf::Event::MouseButtonPressed>())
     {

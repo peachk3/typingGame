@@ -33,9 +33,6 @@
     <ClCompile Include="FileLoader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="GameManager2.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="UIM.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -73,6 +70,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="gameStart.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="UserProfileSelectUI.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="UserProfileUI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -129,6 +132,15 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Scene.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UIAlign.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UserProfileSelectUI.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UserProfileUI.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

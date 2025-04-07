@@ -4,11 +4,17 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include "DrawUI.hpp"
+#include "UIAlign.hpp"
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+
+void skipIndentation(GameState & game);
 
 // --- 렌더링 ---
 void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font, int fontSize)
 {
-    std::cout << "renderGame 실행" << std::endl;
     // UI 배치를 위한 프레임 생성
     // 윈도우 크기의 사각형 생성
     sf::Vector2f winSizeF(
@@ -21,6 +27,7 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
     sf::RectangleShape gState = makeRectangle(window, 0.25f, 0.52f);
     //sf::RectangleShape pfImg = makeRectangle(window, 0.15f, 0.25f);
     sf::RectangleShape pfImg({ 200,200 });
+
 
     gState.setOutlineColor(sf::Color::Red);
     gState.setOutlineThickness(2.f);
@@ -70,6 +77,7 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
     // 입력 받은 파일 초기화
     std::vector<std::vector<std::wstring>> displaySentences = game.sentences;
     std::vector<std::vector<std::wstring>> inputSentences = game.userInputs;
+
 
     // UI 요소 넣기 
     // 문장 출력
@@ -126,7 +134,6 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
     // 타수 (정수)
     tpmV.setString(std::to_wstring(static_cast<int>(game.tpm)) + L"타");
 
-
     // WPM - 영어일 때 이걸로 바꿀까? 
     //{
     //    std::wstringstream ss;
@@ -170,6 +177,9 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
         values[i]->setPosition({ textVPos.x, textVPos.y + i * lineHeight });
     }
 
+
+
+
     // 컨테이너 draw
     //window.draw(pfImg);
     window.draw(gState);
@@ -183,6 +193,7 @@ void renderGame(sf::RenderWindow& window, GameState& game, const sf::Font& font,
         window.draw(*labels[i]);
         window.draw(*values[i]);
     };
+
 
 }
 
@@ -224,12 +235,25 @@ void drawUserInputText(sf::RenderWindow& window, const GameState& game,
             }
 
             // 커서 위치 표시
-            if (i == game.curPara && j == game.curLine) {
-                sf::Text cursorText(font, L"_", fontSize); // 또는 L"_"
-                cursorText.setFillColor(sf::Color::Blue);
-                cursorText.setPosition({ startX + game.curChar * letterSpacing, startY + (fontSize * (i + 1)) + 10.f });
+            if (i == game.curPara && j == game.curLine && game.showCursor) {
+                //sf::Text cursorText(font, L"_", fontSize); // 또는 L"_"
+                //cursorText.setFillColor(sf::Color::Blue);
+                //cursorText.setPosition({ startX + game.curChar * letterSpacing, startY + (fontSize * (i + 1)) + 10.f });
 
-                window.draw(cursorText);
+
+                //window.draw(cursorText);
+                sf::Vector2f cursorPos = { startX + game.curChar * letterSpacing, startY + (fontSize * (i + 1)) + 10.f };
+
+
+                // 사각형 깜빡이는 커서 만들기
+                sf::RectangleShape cursorBlock;
+                cursorBlock.setSize({ letterSpacing, fontSize * 1.1f });
+                cursorBlock.setPosition(cursorPos);
+                cursorBlock.setFillColor(sf::Color(0, 120, 255, 150)); // 반투명 파랑
+
+
+                window.draw(cursorBlock);
+
             }
 
 
@@ -244,11 +268,11 @@ void drawOriginalText(sf::RenderWindow& window,
     std::vector<std::vector<std::wstring>>& displaySentences)
 {
     float startX = standardPos.x + 20.f;        // 노란 영역 패딩 20
-    float startY = standardPos.y;               // 노란 영역 패딩 20
+    float startY = standardPos.y;
 
     float x = 30.f;
     float y = 50.f; // y를 누적해서 줄 간격 주기
-    float letterSpacing = fontSize * 0.90f;  // 한글, 영어일 때 문자 간격 설정
+    float letterSpacing = 0.f;  // 한글, 영어일 때 문자 간격 설정
     //std::vector<std::vector<std::wstring>> displaySentences = game.sentences;
 
     if (game.bHangle)
@@ -284,7 +308,14 @@ void drawOriginalText(sf::RenderWindow& window,
     }
 }
 
+void updateGame(GameState& game)
+{
+    if (game.cursorTimer.getElapsedTime().asMilliseconds() > 500) {
+        game.showCursor = !game.showCursor;
+        game.cursorTimer.restart();
+    }
 
+}
 
 // --- 로직 ---
 void updateTypingStats(GameState& game, float elapsedSeconds)
@@ -409,6 +440,10 @@ void handleInputGame(GameState& game, const sf::Event& event)
             const auto& inputEvent = event.getIf<sf::Event::TextEntered>();
             if (!inputEvent) return;
 
+            if (game.curChar == 0 && inputLine.empty()) {
+                skipIndentation(game);
+            }
+
             wchar_t inputChar = static_cast<wchar_t>(inputEvent->unicode);
 
             // 백스페이스 처리
@@ -423,6 +458,7 @@ void handleInputGame(GameState& game, const sf::Event& event)
                 }
             }
 
+
             // 일반 입력 처리
             else if (inputChar >= 32 && inputChar != 127)
             {
@@ -433,12 +469,13 @@ void handleInputGame(GameState& game, const sf::Event& event)
                     return;
                 }
 
+                // 입력 길이 초과 방지
                 if (inputLine.length() >= targetLine.length()) {
                     std::wcout << L"[DEBUG] 더 이상 입력할 수 없습니다." << std::endl;
                     return;
                 }
 
-                //game.userInputs[game.curPara][game.curLine].insert(game.curChar, 1, inputChar);
+                // 사용자가 실제로 입력한 문자 처리
                 inputLine.insert(game.curChar, 1, inputChar);
 
                 // 정확도 체크해서 correctMap 갱신
@@ -447,6 +484,7 @@ void handleInputGame(GameState& game, const sf::Event& event)
 
                 game.curChar++;
                 game.totalKeyPress++;
+
             }
         }
 
@@ -500,6 +538,7 @@ void printWStringInfo(const std::wstring& name, const std::wstring& str) {
             << static_cast<int>(ch) << L")\n";
     }
 }
+
 // correctMap 디버깅
 void printCorrectLineDebug(const std::vector<bool>& correctLine) {
     std::wcout << L"[DEBUG] correctLine 상태: ";
@@ -507,4 +546,26 @@ void printCorrectLineDebug(const std::vector<bool>& correctLine) {
         std::wcout << (b ? L"t " : L"f ");
     }
     std::wcout << std::endl;
+}
+
+
+// 들여쓰기 건너뛰는 함수
+void skipIndentation(GameState& game)
+{
+    int p = game.curPara;
+    int l = game.curLine;
+    std::wstring& targetLine = game.sentences[p][l];
+    std::wstring& inputLine = game.userInputs[p][l];
+    std::vector<bool>& correctLine = game.correctMap[p][l];
+
+    // 이미 처리된 경우 재진입 방지
+    if (!inputLine.empty()) return;
+
+    while (game.curChar < targetLine.length() &&
+        (targetLine[game.curChar] == L' ' || targetLine[game.curChar] == L'\t'))
+    {
+        inputLine += targetLine[game.curChar];
+        correctLine.push_back(true); // 들여쓰기는 무조건 정답 처리
+        game.curChar++;
+    }
 }

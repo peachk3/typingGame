@@ -307,10 +307,10 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
         userInputs.push_back(inputLine);
     }
 
-    sf::Text gameText(font, L"게임 시작~~!", 60);
+    //sf::Text gameText(font, L"게임 시작~~!", 60);
 
-    gameText.setFillColor(Color::Red);
-    gameText.setPosition(Vector2f(480.f, 50.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
+    //gameText.setFillColor(Color::Red);
+    //gameText.setPosition(Vector2f(480.f, 50.f)); // (왼쪽 -> 오른쪽, 위 -> 아래)
 
     //------------------------------------타자 입력창 만들기------------------------------------
 
@@ -453,7 +453,7 @@ void GameManager::runGame2(sf::RenderWindow& window, sf::Font& font, int fontSiz
         window.draw(backgroundSprite);
         if (backgroundTexture.loadFromFile("./assets/image/back.png")) {
         }
-        window.draw(gameText);
+        //window.draw(gameText);
 
         // 현재 문장 표시 업데이트
         currentSentence.setString(sentences[currentSentenceIdx][currentLineIdx]);
@@ -502,8 +502,8 @@ void GameManager::drawOriginTotalText(sf::RenderWindow& window,
     //}
 
     // 기준 문장 위치 (화면 10/2부터 시작)
-    float x = sectionWidth * 1.5;
-    float y = sectionHeight * 1.5; // y를 누적해서 줄 간격 주기
+    float x = sectionWidth * 1.2;
+    float y = sectionHeight * 1.2; // y를 누적해서 줄 간격 주기
 
     // 텍스트 영역의 너비 (10/3 크기로 제한)
     float maxWidth = sectionWidth * 3;
@@ -531,7 +531,9 @@ void GameManager::drawOriginTotalText(sf::RenderWindow& window,
 
     // 배경 크기 설정 (텍스트 크기보다 여유 공간 추가)
     float padding = 20.f;  // 여백 추가
-    float backgroundWidth = maxTextWidth + padding;  // 가장 긴 텍스트 기준
+    float backgroundWidth = maxWidth;  // 가장 긴 텍스트 기준
+    //float backgroundWidth = maxTextWidth + padding;  // 가장 긴 텍스트 기준
+
     float backgroundHeight = totalTextHeight + padding;  // 전체 높이
 
 
@@ -605,13 +607,13 @@ void GameManager::drawOriginText(
     std::vector<std::vector<std::wstring>>& fileAllLines)
 {
     if (currentLineIndex >= fileAllLines.size()) return; // 모든 줄 출력 완료
-    const float sectionWidth = MAIN_WINDOW_WIDTH / 10.f; // = 72.0f
+    const float sectionWidth = MAIN_WINDOW_WIDTH / 10.f; 
     const float sectionHeight = MAIN_WINDOW_HEIGHT / 4.f;
 
     //float x = 200.f;
-    float x = sectionWidth * 7.5f; // 오른쪽 중앙
+    float x = sectionWidth * 7.0f; // 오른쪽 중앙
     // 화면의 1/6 영역으로 제한 (4/6 ~ 5/6)
-    float areaWidth = sectionWidth * 3;
+    float areaWidth = sectionWidth * 4;
     float y = sectionHeight * 1.5; // y를 누적해서 줄 간격 주기
 
     //한 글자씩 입력
