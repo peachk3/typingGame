@@ -1,5 +1,28 @@
-# typingGame
-타자 연습 게임
+# typing Game
+C++ 기반 타자 연습 게임 만들기
+
+프로젝트 개요
+
+- 개발 일정
+  - 2025.03.24 ~ 2025.04.07
+- 개발 특징
+  - 기본 타자 연습(한/영, 코딩), 1 대 1 대결
+  - 게임 화면 UI
+  - MySQL 기반 사용자 데이터 관리
+  - SFML 네트워크 소켓 통신 기반 멀티 플레이
+
+기술 스택
+- SFML
+  - 표준 C++ 라이브러리
+  - Multithreading
+  - Custom UI Modules
+  - 상태기반/재귀적 게임 루프
+- 소켓통신
+  - SFML Network
+  - TCP 소켓
+  - 싱글톤 패턴
+-  MySQL Workbench
+
 ## 1일차
 
 ## 2일차
